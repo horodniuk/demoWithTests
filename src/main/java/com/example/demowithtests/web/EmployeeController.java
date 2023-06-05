@@ -44,11 +44,12 @@ public class EmployeeController {
             @ApiResponse(responseCode = "409", description = "Employee already exists")})
     public EmployeeDto saveEmployee(@RequestBody @Valid EmployeeDto requestForSave) {
 
-        var employee = converter.getMapperFacade().map(requestForSave, Employee.class);
+        var employee = converter.getModelMapper().map(requestForSave, Employee.class);
         var dto = converter.toDto(employeeService.create(employee));
 
         return dto;
     }
+
     @PostMapping("/usersS")
     @ResponseStatus(HttpStatus.CREATED)
     public void saveEmployee1(@RequestBody Employee employee) {

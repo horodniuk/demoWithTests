@@ -3,6 +3,8 @@ package com.example.demowithtests.dto;
 import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -11,6 +13,8 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 public class EmployeeDto {
 
     public Integer id;
@@ -30,7 +34,6 @@ public class EmployeeDto {
 
     public Instant startDate = Instant.now();
 
-    //public Set<AddressDto> addresses = new HashSet<>();
 
     public Gender gender;
 
