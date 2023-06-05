@@ -1,3 +1,10 @@
+-- Create the sequence for users table
+CREATE SEQUENCE users_id_seq;
+
+-- Create the sequence for addresses table
+CREATE SEQUENCE addresses_id_seq;
+
+
 create table if not exists public.users
 (
     id         serial

@@ -4,6 +4,8 @@ import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.util.annotations.dto.BlockedEmailDomains;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -14,6 +16,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 public record EmployeeDto(
 
         @Schema(description = "Id in DB")
@@ -37,26 +41,10 @@ public record EmployeeDto(
         @Schema(description = "Date response")
         Date startDate,
 
-        Gender gender,
+    public Instant startDate = Instant.now();
 
-        @Valid
-        Set<AddressDto> addresses) {
 
-    public EmployeeDto(Integer id,
-                       String name,
-                       String country,
-                       String email,
-                       Date startDate,
-                       Gender gender,
-                       Set<AddressDto> addresses) {
+    public Gender gender;
 
-        this.id = id;
-        this.name = name;
-        this.country = country;
-        this.email = email;
-        this.startDate = startDate != null ? startDate : Date.from(Instant.now());
-        this.gender = gender;
-        this.addresses = addresses != null ? addresses : new HashSet<>();
-
-    }
+    public Set<AddressDto> addresses = new HashSet<>();
 }

@@ -3,11 +3,17 @@ package com.example.demowithtests.dto;
 import com.example.demowithtests.util.annotations.dto.CountryRightFormed;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.example.demowithtests.domain.Address;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.time.Instant;
 import java.util.Date;
 
 //@Accessors(chain = true)
+@Setter
+@Getter
 public class AddressDto {
 
     public Long id;

@@ -3,6 +3,7 @@ package com.example.demowithtests.dto;
 import com.example.demowithtests.domain.Gender;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Setter;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
 public class EmployeeReadDto {
 
     public Integer id;

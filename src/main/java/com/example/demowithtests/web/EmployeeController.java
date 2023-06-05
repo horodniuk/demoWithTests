@@ -44,14 +44,14 @@ public class EmployeeController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND. Specified employee request not found."),
             @ApiResponse(responseCode = "409", description = "Employee already exists")})
     public EmployeeDto saveEmployee(@RequestBody @Valid EmployeeDto requestForSave) {
-        log.debug("saveEmployee() - start: requestForSave = {}", requestForSave.name());
-        var employee = employeeMapper.toEmployee(requestForSave);
-        var dto = employeeMapper.toEmployeeDto(employeeService.create(employee));
-        log.debug("saveEmployee() - stop: dto = {}", dto.name());
+
+        var employee = converter.getModelMapper().map(requestForSave, Employee.class);
+        var dto = converter.toDto(employeeService.create(employee));
+
         return dto;
     }
 
-    @PostMapping("/users/jpa")
+    @PostMapping("/usersS")
     @ResponseStatus(HttpStatus.CREATED)
     public Employee saveEmployee(@RequestBody Employee employee) {
         log.debug("saveEmployeeWithJpa() - start: employee = {}", employee);
@@ -66,16 +66,13 @@ public class EmployeeController {
         return employeeService.getAll();
     }
 
-    @GetMapping("/users/pages")
+    @GetMapping("/users/p")
     @ResponseStatus(HttpStatus.OK)
-    public Page<EmployeeReadDto> getPage(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
-        log.debug("getPage() - start: page= {}, size = {}", page, size);
-        var paging = PageRequest.of(page, size);
-        var content = employeeService.getAllWithPagination(paging)
-                .map(employeeMapper::toEmployeeReadDto);
-        log.debug("getPage() - end: content = {}", content);
-        return content;
+    public Page<Employee> getPage(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        return employeeService.getAllWithPagination(paging);
     }
 
     @GetMapping("/users/{id}")
@@ -90,19 +87,17 @@ public class EmployeeController {
         log.debug("getEmployeeById() EmployeeController - start: id = {}", id);
         var employee = employeeService.getById(id);
         log.debug("getById() EmployeeController - to dto start: id = {}", id);
-        var dto = employeeMapper.toEmployeeReadDto(employee);
+        var dto = converter.toReadDto(employee);
         log.debug("getEmployeeById() EmployeeController - end: name = {}", dto.name);
         return dto;
     }
 
+    //Обновление юзера
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeReadDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employee) {
-        log.debug("refreshEmployee() EmployeeController - start: id = {}", id);
-        Employee entity = employeeMapper.toEmployee(employee);
-        EmployeeReadDto dto = employeeMapper.toEmployeeReadDto(employeeService.updateById(id, entity));
-        log.debug("refreshEmployee() EmployeeController - end: name = {}", dto.name);
-        return dto;
+    public Employee refreshEmployee(@PathVariable("id") Integer id, @RequestBody Employee employee) {
+
+        return employeeService.updateById(id, employee);
     }
 
     @DeleteMapping("/users/{id}")
@@ -119,14 +114,14 @@ public class EmployeeController {
 
     @GetMapping("/users/country")
     @ResponseStatus(HttpStatus.OK)
-    public Page<EmployeeReadDto> findByCountry(@RequestParam(required = false) String country,
-                                               @RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "3") int size,
-                                               @RequestParam(defaultValue = "") List<String> sortList,
-                                               @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder) {
+    public Page<Employee> findByCountry(@RequestParam(required = false) String country,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "3") int size,
+                                        @RequestParam(defaultValue = "") List<String> sortList,
+                                        @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder) {
         //Pageable paging = PageRequest.of(page, size);
         //Pageable paging = PageRequest.of(page, size, Sort.by("name").ascending());
-        return employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString()).map(employeeMapper::toEmployeeReadDto);
+        return employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString());
     }
 
     @GetMapping("/users/c")
@@ -151,20 +146,5 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     public List<Employee> getByCountry(@RequestParam(required = true) String country) {
         return employeeService.filterByCountry(country);
-    }
-
-    @PatchMapping("/users/ukrainians")
-    @ResponseStatus(HttpStatus.OK)
-    public Set<String> sendEmailsAllUkrainian() {
-        return employeeService.sendEmailsAllUkrainian();
-    }
-
-    @GetMapping("/users/names")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Employee> findByNameContaining(@RequestParam String employeeName) {
-        log.debug("findByNameContaining() EmployeeController - start: employeeName = {}", employeeName);
-        List<Employee> employees = employeeService.findByNameContaining(employeeName);
-        log.debug("findByNameContaining() EmployeeController - end: employees = {}", employees.size());
-        return employees;
     }
 }
