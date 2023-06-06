@@ -16,19 +16,19 @@ public class ModelMapperConfig {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        // Configure mappings from Employee to EmployeeDto
+
         modelMapper.createTypeMap(Employee.class, EmployeeDto.class)
                 .addMappings(mapper -> {
                     mapper.map(src -> src.getAddresses(), EmployeeDto::setAddresses);
                 });
 
-        // Configure mappings from EmployeeDto to Employee
+
         modelMapper.createTypeMap(EmployeeDto.class, Employee.class)
                 .addMappings(mapper -> {
                     mapper.map(src -> src.getAddresses(), Employee::setAddresses);
                 });
 
-        // Configure mappings from Address to AddressDto
+
         modelMapper.createTypeMap(Address.class, AddressDto.class)
                 .addMapping(Address::getAddressHasActive, AddressDto::setAddressHasActive);
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
@@ -33,4 +34,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Page<Employee> findByCountryContaining(String country, Pageable pageable);
 
+    Page<Employee> findAllByIsDeletedFalse(Pageable pageable);
+
+    Optional<Employee> findByIdAndIsDeletedFalse(Integer id);
+
+    List<Employee> findAllByIsDeletedFalse();
 }

@@ -34,7 +34,6 @@ public class EmployeeDto {
 
     public Instant startDate = Instant.now();
 
-
     public Gender gender;
 
     public Set<AddressDto> addresses = new HashSet<>();

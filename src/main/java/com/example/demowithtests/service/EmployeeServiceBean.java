@@ -11,8 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -34,6 +32,53 @@ public class EmployeeServiceBean implements EmployeeService {
     private EntityManager entityManager;
 
     @Override
+    public void removeAll() {
+        List<Employee> employees = employeeRepository.findAll();
+        for (Employee employee : employees) {
+            employee.setDeleted(true);
+            employeeRepository.save(employee);
+        }
+    }
+
+    @Override
+    public void removeById(Integer id) {
+        //repository.deleteById(id);
+        var employee = employeeRepository.findByIdAndIsDeletedFalse(id)
+                // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
+                .orElseThrow(ResourceWasDeletedException::new);
+        employee.setDeleted(true);
+        //    employeeRepository.delete(employee);
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public List<Employee> getAll() {
+        return employeeRepository.findAllByIsDeletedFalse();
+    }
+
+    @Override
+    public Employee getById(Integer id) {
+        var employee = employeeRepository.findByIdAndIsDeletedFalse(id)
+                // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
+                .orElseThrow(ResourceNotFoundException::new);
+        /* if (employee.getIsDeleted()) {
+            throw new EntityNotFoundException("Employee was deleted with id = " + id);
+        }*/
+        return employee;
+    }
+
+
+    @Override
+    public Employee updateById(Integer id, Employee employee) {
+            final var entity = employeeRepository.findByIdAndIsDeletedFalse(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
+            entity.setName(employee.getName());
+            entity.setEmail(employee.getEmail());
+            entity.setCountry(employee.getCountry());
+        return employeeRepository.save(entity);
+    }
+
+    @Override
    // @Transactional(propagation = Propagation.MANDATORY)
     public Employee create(Employee employee) {
         return employeeRepository.save(employee);
@@ -44,57 +89,15 @@ public class EmployeeServiceBean implements EmployeeService {
         return entityManager.merge(employee);
     }
 
-    @Override
-    public List<Employee> getAll() {
-        return employeeRepository.findAll();
-    }
+
 
     @Override
     public Page<Employee> getAllWithPagination(Pageable pageable) {
         log.debug("getAllWithPagination() - start: pageable = {}", pageable);
-        Page<Employee> list = employeeRepository.findAll(pageable);
+        Page<Employee> list = employeeRepository.findAllByIsDeletedFalse(pageable);
         log.debug("getAllWithPagination() - end: list = {}", list);
         return list;
     }
-
-    @Override
-    public Employee getById(Integer id) {
-        var employee = employeeRepository.findById(id)
-                // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-                .orElseThrow(ResourceNotFoundException::new);
-        /* if (employee.getIsDeleted()) {
-            throw new EntityNotFoundException("Employee was deleted with id = " + id);
-        }*/
-        return employee;
-    }
-
-    @Override
-    public Employee updateById(Integer id, Employee employee) {
-        return employeeRepository.findById(id)
-                .map(entity -> {
-                    entity.setName(employee.getName());
-                    entity.setEmail(employee.getEmail());
-                    entity.setCountry(employee.getCountry());
-                    return employeeRepository.save(entity);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-    }
-
-    @Override
-    public void removeById(Integer id) {
-        //repository.deleteById(id);
-        var employee = employeeRepository.findById(id)
-                // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-                .orElseThrow(ResourceWasDeletedException::new);
-        //employee.setIsDeleted(true);
-        employeeRepository.delete(employee);
-        //repository.save(employee);
-    }
-
-
-
-
-
 
 
    /* public boolean isValid(Employee employee) {
@@ -124,11 +127,6 @@ public class EmployeeServiceBean implements EmployeeService {
             return false;
         }
     }*/
-
-    @Override
-    public void removeAll() {
-        employeeRepository.deleteAll();
-    }
 
     /*@Override
     public Page<Employee> findByCountryContaining(String country, Pageable pageable) {
@@ -160,7 +158,7 @@ public class EmployeeServiceBean implements EmployeeService {
     @Override
     public List<String> getAllEmployeeCountry() {
         log.info("getAllEmployeeCountry() - start:");
-        List<Employee> employeeList = employeeRepository.findAll();
+        List<Employee> employeeList = employeeRepository.findAllByIsDeletedFalse();
         List<String> countries = employeeList.stream()
                 .map(country -> country.getCountry())
                 .collect(Collectors.toList());
@@ -175,7 +173,7 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public List<String> getSortCountry() {
-        List<Employee> employeeList = employeeRepository.findAll();
+        List<Employee> employeeList = employeeRepository.findAllByIsDeletedFalse();
         return employeeList.stream()
                 .map(Employee::getCountry)
                 .filter(c -> c.startsWith("U"))
@@ -185,7 +183,7 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Optional<String> findEmails() {
-        var employeeList = employeeRepository.findAll();
+        var employeeList = employeeRepository.findAllByIsDeletedFalse();
 
         var emails = employeeList.stream()
                 .map(Employee::getEmail)
