@@ -4,30 +4,35 @@ import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.*;
+import org.hibernate.annotations.Columns;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
+@Data
 @Builder
-public final class Employee {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Name
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "country")
     private String country;
 
-    @ToLowerCase
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id")

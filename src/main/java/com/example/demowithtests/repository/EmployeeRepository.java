@@ -52,6 +52,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Page<Employee> findByCountryContaining(String country, Pageable pageable);
 
+    Page<Employee> findAllByIsDeletedFalse(Pageable pageable);
+
+    Optional<Employee> findByIdAndIsDeletedFalse(Integer id);
+
+    List<Employee> findAllByIsDeletedFalse();
     @Query(value = "SELECT * FROM users WHERE country = 'Ukraine'", nativeQuery = true)
     Optional<List<Employee>> findAllUkrainian();
 

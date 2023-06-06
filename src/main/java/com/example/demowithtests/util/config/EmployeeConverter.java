@@ -27,7 +27,6 @@ public class EmployeeConverter {
         return modelMapper.map(entity, EmployeeReadDto.class);
     }
 
-
     public Employee fromDto(EmployeeDto dto) {
         return modelMapper.map(dto, Employee.class);
     }
