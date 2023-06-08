@@ -6,7 +6,8 @@ import com.example.demowithtests.service.emailSevice.EmailSenderService;
 import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
-import com.example.demowithtests.util.exception.ResourceNotFoundException;
+import com.example.demowithtests.util.exception.EmployeeNotFoundException;
+import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.ResourceWasDeletedException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -26,37 +27,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 @Service
-public class EmployeeServiceBean implements EmployeeService {
+public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginationService, EmployeeFilterService, EmployeeSortService {
 
     private final EmployeeRepository employeeRepository;
     private final EmailSenderService emailSenderService;
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Override
-    @ActivateCustomAnnotations({Name.class, ToLowerCase.class})
-    // @Transactional(propagation = Propagation.MANDATORY)
-    public Employee create(Employee employee) {
-        return employeeRepository.save(employee);
-    public void removeAll() {
-        List<Employee> employees = employeeRepository.findAll();
-        for (Employee employee : employees) {
-            employee.setDeleted(true);
-            employeeRepository.save(employee);
-        }
-    }
-
-    @Override
-    public void removeById(Integer id) {
-        //repository.deleteById(id);
-        var employee = employeeRepository.findByIdAndIsDeletedFalse(id)
-                // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-                .orElseThrow(ResourceWasDeletedException::new);
-        employee.setDeleted(true);
-        //    employeeRepository.delete(employee);
-        employeeRepository.save(employee);
-    }
 
     @Override
     public List<Employee> getAll() {
@@ -73,28 +50,47 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Employee getById(Integer id) {
-        var employee = employeeRepository.findByIdAndIsDeletedFalse(id)
-                // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-                .orElseThrow(ResourceNotFoundException::new);
-        /* if (employee.getIsDeleted()) {
-            throw new EntityNotFoundException("Employee was deleted with id = " + id);
-        }*/
+        var employee = employeeRepository.findById(id)
+                .orElseThrow(EmployeeNotFoundException::new);
+        if (employee.isDeleted()) {
+            throw new EmployeeWasDeletedException();
+        }
         return employee;
+    }
+
+    @Override
+    public void removeById(Integer id) {
+        var employee = employeeRepository.findById(id)
+                .orElseThrow(EmployeeNotFoundException::new);
+        if (employee.isDeleted()) {
+            throw new EmployeeWasDeletedException();
+        }
+        employee.setDeleted(true);
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public void removeAll() {
+        List<Employee> employees = employeeRepository.findAll();
+        for (Employee employee : employees) {
+            employee.setDeleted(true);
+            employeeRepository.save(employee);
+        }
     }
 
 
     @Override
     public Employee updateById(Integer id, Employee employee) {
-            final var entity = employeeRepository.findByIdAndIsDeletedFalse(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-            entity.setName(employee.getName());
-            entity.setEmail(employee.getEmail());
-            entity.setCountry(employee.getCountry());
+        final var entity = employeeRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
+        entity.setName(employee.getName());
+        entity.setEmail(employee.getEmail());
+        entity.setCountry(employee.getCountry());
         return employeeRepository.save(entity);
     }
 
     @Override
-   // @Transactional(propagation = Propagation.MANDATORY)
+    // @Transactional(propagation = Propagation.MANDATORY)
     public Employee create(Employee employee) {
         return employeeRepository.save(employee);
     }
@@ -103,7 +99,6 @@ public class EmployeeServiceBean implements EmployeeService {
     public Employee createEM(Employee employee) {
         return entityManager.merge(employee);
     }
-
 
 
     @Override
@@ -196,7 +191,7 @@ public class EmployeeServiceBean implements EmployeeService {
         List<Employee> employeeList = employeeRepository.findAllByIsDeletedFalse();
         return employeeList.stream()
                 .map(Employee::getCountry)
-                .filter(c -> c.startsWith("U"))
+                .filter(c -> c.startsWith("X"))
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());
     }

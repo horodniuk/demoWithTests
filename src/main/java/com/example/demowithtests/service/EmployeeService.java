@@ -36,18 +36,8 @@ public interface EmployeeService {
      */
     Page<Employee> findByCountryContaining(String country, int page, int size, List<String> sortList, String sortOrder);
 
-    /**
-     * Get all the countries of all the employees.
-     *
-     * @return A list of all the countries that employees are from.
-     */
     List<String> getAllEmployeeCountry();
 
-    /**
-     * It returns a list of countries sorted by name.
-     *
-     * @return A list of countries in alphabetical order.
-     */
     List<String> getSortCountry();
 
     Optional<String> findEmails();

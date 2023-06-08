@@ -4,6 +4,9 @@ import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.service.EmployeeService;
+import com.example.demowithtests.service.EmployeeServiceBean;
+import com.example.demowithtests.util.config.EmployeeConverter;
+import com.example.demowithtests.util.exception.EmployeePaginationException;
 import com.example.demowithtests.service.EmployeeServiceEM;
 import com.example.demowithtests.util.mappers.EmployeeMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,9 +71,13 @@ public class EmployeeController {
 
     @GetMapping("/users/p")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Employee> getPage(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "5") int size
+    public Page<Employee> getPage(@RequestParam(defaultValue = "2") int page,
+                                  @RequestParam(defaultValue = "-100") int size
     ) {
+        if (page < 0 || size <= 0) {
+            throw new EmployeePaginationException("Parameters incorect. Check page and size value", page, size);
+        }
+
         Pageable paging = PageRequest.of(page, size);
         return employeeService.getAllWithPagination(paging);
     }
