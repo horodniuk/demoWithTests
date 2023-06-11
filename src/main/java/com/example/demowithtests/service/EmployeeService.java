@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface EmployeeService {
@@ -39,7 +40,5 @@ public interface EmployeeService {
 
     List<Employee> updateCountryFirstLetterToUpperCase();
 
-
-
-
+    Employee updateMailById(Integer id, String newMail);
 }

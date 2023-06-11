@@ -221,4 +221,16 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
 
         return employeeRepository.saveAll(employees);
     }
+
+    @Override
+    public Employee updateMailById(Integer id, String newMail) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isPresent()) {
+            Employee employee = optionalEmployee.get();
+            employee.setEmail(newMail);
+            return employeeRepository.save(employee);
+        } else {
+            throw new EmployeeNotFoundException();
+        }
+    }
 }
