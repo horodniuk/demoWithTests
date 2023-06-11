@@ -8,4 +8,6 @@ public interface EmployeeFilterService extends EmployeeService {
 
     List<Employee> filterByCountry(String country);
 
+    List<Employee> filterByEmailIsNull();
+
 }
