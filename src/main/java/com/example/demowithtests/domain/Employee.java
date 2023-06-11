@@ -7,6 +7,8 @@ import lombok.*;
 import lombok.*;
 import org.hibernate.annotations.Columns;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +27,8 @@ public class Employee {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "country")
+    @Column(name = "country",  nullable = false)
+    @NotBlank
     private String country;
 
     @Column(name = "email")

@@ -42,7 +42,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Employee findByName(String name);
 
-    Employee findEmployeeByEmailNotNull();
 
     @NotNull
     Page<Employee> findAll(Pageable pageable);
@@ -57,7 +56,34 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Optional<Employee> findByIdAndIsDeletedFalse(Integer id);
 
     List<Employee> findAllByIsDeletedFalse();
+
+    List<Employee> findByIsDeletedFalseAndEmailIsNull();
+
+    @Query("SELECT e FROM Employee e WHERE" +
+           " e.isDeleted = false AND" +
+           " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
+    List<Employee> findByCountryFirstLetterLowerCase();
+
     @Query(value = "SELECT * FROM users WHERE country = 'Ukraine'", nativeQuery = true)
     Optional<List<Employee>> findAllUkrainian();
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

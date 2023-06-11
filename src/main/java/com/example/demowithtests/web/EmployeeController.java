@@ -154,4 +154,22 @@ public class EmployeeController {
     public List<Employee> getByCountry(@RequestParam(required = true) String country) {
         return employeeService.filterByCountry(country);
     }
+
+    @GetMapping("/users/e_null")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> getEmailsByNull() {
+        return employeeService.filterByEmailIsNull();
+    }
+
+    @PatchMapping("/users/c_up_upper")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> updateCountryFirstLetterToUpperCase() {
+        return employeeService.updateCountryFirstLetterToUpperCase();
+    }
+
+
+
+
+
+
 }

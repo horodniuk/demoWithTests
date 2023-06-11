@@ -8,18 +8,18 @@ import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
 import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
-import com.example.demowithtests.util.exception.ResourceWasDeletedException;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,15 +37,7 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
 
     @Override
     public List<Employee> getAll() {
-        return employeeRepository.findAll();
-    }
-
-    @Override
-    public Page<Employee> getAllWithPagination(Pageable pageable) {
-        log.debug("getAllWithPagination() - start: pageable = {}", pageable);
-        Page<Employee> list = employeeRepository.findAll(pageable);
-        log.debug("getAllWithPagination() - end: list = {}", list);
-        return list;
+        return employeeRepository.findAllByIsDeletedFalse();
     }
 
     @Override
@@ -138,11 +130,6 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
         }
     }*/
 
-    @Override
-    public void removeAll() {
-        employeeRepository.deleteAll();
-    }
-
     /*@Override
     public Page<Employee> findByCountryContaining(String country, Pageable pageable) {
         return employeeRepository.findByCountryContaining(country, pageable);
@@ -214,5 +201,30 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
     @Override
     public List<Employee> filterByCountry(String country) {
         return employeeRepository.findByCountry(country);
+    }
+
+    @Override
+    public List<Employee> filterByEmailIsNull() {
+        return employeeRepository.findByIsDeletedFalseAndEmailIsNull();
+    }
+
+    @Override
+    public List<Employee> updateCountryFirstLetterToUpperCase() {
+        List<Employee> employees = employeeRepository.findByCountryFirstLetterLowerCase();
+
+        if (employees.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Employee employee : employees) {
+            sb.setLength(0);
+            String country = employee.getCountry();
+            sb.append(Character.toUpperCase(country.charAt(0))).append(country.substring(1));
+            employee.setCountry(sb.toString());
+        }
+
+        return employeeRepository.saveAll(employees);
     }
 }

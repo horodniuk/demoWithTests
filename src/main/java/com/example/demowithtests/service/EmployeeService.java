@@ -48,4 +48,11 @@ public interface EmployeeService {
 
     List<Employee> findByNameContaining(String name);
 
+    List<Employee> filterByEmailIsNull();
+
+    List<Employee> updateCountryFirstLetterToUpperCase();
+
+
+
+
 }

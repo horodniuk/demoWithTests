@@ -11,13 +11,15 @@ public interface EmployeeCrudService extends EmployeeService {
 
     Employee createEM(Employee employee);
 
-    List<Employee> getAll();
-
     Employee getById(Integer id);
-
-    Employee updateById(Integer id, Employee plane);
 
     void removeById(Integer id);
 
     void removeAll();
+
+    List<Employee> getAll();
+
+    Employee updateById(Integer id, Employee plane);
+
+    List<Employee> updateCountryFirstLetterToUpperCase();
 }
