@@ -3,6 +3,8 @@ package com.example.demowithtests.web;
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.dto.EmployeeUpdateMailDto;
+import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
 import com.example.demowithtests.service.EmployeeService;
 import com.example.demowithtests.service.EmployeeServiceBean;
 import com.example.demowithtests.util.config.EmployeeConverter;
@@ -107,6 +109,19 @@ public class EmployeeController {
         return employeeService.updateById(id, employee);
     }
 
+    //Обновление mail юзера
+    @PatchMapping("/users/up_m/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeUpdateMailDto refreshEmployeeMail(@PathVariable("id") Integer id, @RequestBody EmployeeUpdateMailReadDto updateMailDto) {
+        String oldMail = employeeService.getById(id).getEmail();
+        Employee employee = employeeService.updateMailById(id, updateMailDto.getNewMail());
+        String newMail = employee.getEmail();
+        return new EmployeeUpdateMailDto(oldMail, newMail);
+    }
+
+
+    //Удаление по id
+    @PatchMapping("/users/{id}")
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeEmployeeById(@PathVariable Integer id) {
