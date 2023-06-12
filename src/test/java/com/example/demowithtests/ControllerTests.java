@@ -65,10 +65,11 @@ public class ControllerTests {
     @DisplayName("POST API -> /api/users")
     @WithMockUser(roles = "ADMIN")
     public void createPassTest() throws Exception {
-
-        EmployeeDto response = new EmployeeDto(
-                1, "Mike", "England", "mail@mail.com",
-                null, null, null);
+        var response = new EmployeeDto();
+        response.setId(1);
+        response.setName("Mike");
+        response.setEmail("mail@mail.com");
+        var employee = Employee.builder().id(1).name("Mike").email("mail@mail.com").build();
 
         var employee = Employee.builder()
                 .id(1)
@@ -152,7 +153,7 @@ public class ControllerTests {
     @WithMockUser(roles = "ADMIN")
     public void updatePassByIdTest() throws Exception {
         var response = new EmployeeReadDto();
-        response.id = 1;
+        response.setId(1);
         var employee = Employee.builder().id(1).build();
 
         when(employeeMapper.toEmployee(any(EmployeeDto.class))).thenReturn(employee);

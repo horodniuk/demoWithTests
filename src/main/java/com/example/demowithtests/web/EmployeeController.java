@@ -6,7 +6,6 @@ import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
 import com.example.demowithtests.service.EmployeeService;
-import com.example.demowithtests.service.EmployeeServiceBean;
 import com.example.demowithtests.util.config.EmployeeConverter;
 import com.example.demowithtests.util.exception.EmployeePaginationException;
 import com.example.demowithtests.service.EmployeeServiceEM;
@@ -50,7 +49,8 @@ public class EmployeeController {
             @ApiResponse(responseCode = "409", description = "Employee already exists")})
     public EmployeeDto saveEmployee(@RequestBody @Valid EmployeeDto requestForSave) {
 
-        var employee = converter.getModelMapper().map(requestForSave, Employee.class);
+      //  var employee = converter.getModelMapper().map(requestForSave, Employee.class);
+        var employee = converter.fromDto(requestForSave);
         var dto = converter.toDto(employeeService.create(employee));
 
         return dto;
@@ -58,30 +58,28 @@ public class EmployeeController {
 
     @PostMapping("/usersS")
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee saveEmployee(@RequestBody Employee employee) {
-        log.debug("saveEmployeeWithJpa() - start: employee = {}", employee);
-        Employee saved = employeeServiceEM.createWithJpa(employee);
-        log.debug("saveEmployeeWithJpa() - stop: employee = {}", employee.getId());
-        return saved;
+    public void saveEmployee1(@RequestBody EmployeeDto employeeDto) {
+        Employee employee = converter.fromDto(employeeDto);
+        employeeService.create(employee);
     }
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getAllUsers() {
-        return employeeService.getAll();
+    public List<EmployeeDto> getAllUsers() {
+        var employees = employeeService.getAll();
+        return converter.toDtoList(employees);
     }
 
     @GetMapping("/users/p")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Employee> getPage(@RequestParam(defaultValue = "2") int page,
-                                  @RequestParam(defaultValue = "-100") int size
-    ) {
+    public Page<EmployeeDto> getPage(@RequestParam(defaultValue = "2") int page, @RequestParam(defaultValue = "-100") int size) {
         if (page < 0 || size <= 0) {
             throw new EmployeePaginationException("Parameters incorect. Check page and size value", page, size);
         }
 
         Pageable paging = PageRequest.of(page, size);
-        return employeeService.getAllWithPagination(paging);
+        Page<Employee> employeePage = employeeService.getAllWithPagination(paging);
+        return employeePage.map(converter::toDto);
     }
 
     @GetMapping("/users/{id}")
@@ -97,16 +95,17 @@ public class EmployeeController {
         var employee = employeeService.getById(id);
         log.debug("getById() EmployeeController - to dto start: id = {}", id);
         var dto = converter.toReadDto(employee);
-        log.debug("getEmployeeById() EmployeeController - end: name = {}", dto.name);
+        log.debug("getEmployeeById() EmployeeController - end: name = {}", dto.getName());
         return dto;
     }
 
     //Обновление юзера
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Employee refreshEmployee(@PathVariable("id") Integer id, @RequestBody Employee employee) {
-
-        return employeeService.updateById(id, employee);
+    public EmployeeDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
+        Employee employee = converter.fromDto(employeeDto);
+        Employee updatedEmployee = employeeService.updateById(id, employee);
+        return converter.toDto(updatedEmployee);
     }
 
     //Обновление mail юзера
@@ -116,7 +115,7 @@ public class EmployeeController {
         String oldMail = employeeService.getById(id).getEmail();
         Employee employee = employeeService.updateMailById(id, updateMailDto.getNewMail());
         String newMail = employee.getEmail();
-        return new EmployeeUpdateMailDto(oldMail, newMail);
+        return converter.toUpdateMailDto(oldMail, newMail);
     }
 
 
@@ -136,14 +135,14 @@ public class EmployeeController {
 
     @GetMapping("/users/country")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Employee> findByCountry(@RequestParam(required = false) String country,
+    public Page<EmployeeDto> findByCountry(@RequestParam(required = false) String country,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "3") int size,
                                         @RequestParam(defaultValue = "") List<String> sortList,
                                         @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder) {
-        //Pageable paging = PageRequest.of(page, size);
-        //Pageable paging = PageRequest.of(page, size, Sort.by("name").ascending());
-        return employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString());
+
+        Page<Employee> employeePage = employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString());
+        return employeePage.map(converter::toDto);
     }
 
     @GetMapping("/users/c")
@@ -166,25 +165,23 @@ public class EmployeeController {
 
     @GetMapping("/users/countryBy")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getByCountry(@RequestParam(required = true) String country) {
-        return employeeService.filterByCountry(country);
+    public List<EmployeeDto> getByCountry(@RequestParam(required = true) String country) {
+        var employees = employeeService.filterByCountry(country);
+        return converter.toDtoList(employees);
     }
 
     @GetMapping("/users/e_null")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getEmailsByNull() {
-        return employeeService.filterByEmailIsNull();
+    public List<EmployeeDto> getEmailsByNull() {
+        var employees =  employeeService.filterByEmailIsNull();
+        return converter.toDtoList(employees);
     }
 
     @PatchMapping("/users/c_up_upper")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> updateCountryFirstLetterToUpperCase() {
-        return employeeService.updateCountryFirstLetterToUpperCase();
+    public List<EmployeeDto> updateCountryFirstLetterToUpperCase() {
+        var employees = employeeService.updateCountryFirstLetterToUpperCase();
+        return converter.toDtoList(employees);
     }
-
-
-
-
-
 
 }

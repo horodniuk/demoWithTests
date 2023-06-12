@@ -124,13 +124,13 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.5.1.Final</version>
+            <version>${org.mapstruct.version}</version>
         </dependency>
         <!-- mapstruct-processor -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.1.Final</version>
+            <version>${org.mapstruct.version}</version>
         </dependency>
 
         <dependency>
