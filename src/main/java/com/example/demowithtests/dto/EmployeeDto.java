@@ -3,8 +3,7 @@ package com.example.demowithtests.dto;
 import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -13,28 +12,29 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeDto {
 
-    public Integer id;
+    private Integer id;
 
     @NotNull
     @Size(min = 2, max = 32, message = "Name must be between 2 and 32 characters long")
     @Schema(description = "Name of an employee.", example = "Billy", required = true)
-    public String name;
+    private String name;
 
     @Schema(description = "Name of the country.", example = "England", required = true)
-    public String country;
+    private String country;
 
     @Email
     @NotNull
     @Schema(description = "Email address of an employee.", example = "billys@mail.com", required = true)
-    public String email;
+    private String email;
 
-    public Instant startDate = Instant.now();
+    private Instant startDate = Instant.now();
 
-    public Gender gender;
+    private Gender gender;
 
-    public Set<AddressDto> addresses = new HashSet<>();
+    private Set<AddressDto> addresses = new HashSet<>();
 }

@@ -18,6 +18,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <org.mapstruct.version>1.5.1.Final</org.mapstruct.version>
     </properties>
 
     <dependencies>
@@ -99,26 +100,7 @@
             <version>2.1.214</version>
             <scope>test</scope>
         </dependency>
-        <!-- orika -->
-  <!--      <dependency>
-            <groupId>dev.akkinoc.spring.boot</groupId>
-            <artifactId>orika-spring-boot-starter</artifactId>
-            <version>2.3.3</version>
-        </dependency>
 
-        <dependency>
-            <groupId>ma.glasnost.orika</groupId>
-            <artifactId>orika-core</artifactId>
-            <version>1.5.4</version>
-            <scope>compile</scope>
-        </dependency>-->
-
-        <!-- modelMapper -->
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>3.1.1</version>
-        </dependency>
         <!-- swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -135,13 +117,13 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.5.1.Final</version>
+            <version>${org.mapstruct.version}</version>
         </dependency>
         <!-- mapstruct-processor -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.1.Final</version>
+            <version>${org.mapstruct.version}</version>
         </dependency>
 
     </dependencies>

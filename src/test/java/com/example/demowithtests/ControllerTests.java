@@ -61,9 +61,9 @@ public class ControllerTests {
     @WithMockUser(roles = "ADMIN")
     public void createPassTest() throws Exception {
         var response = new EmployeeDto();
-        response.id = 1;
-        response.name = "Mike";
-        response.email = "mail@mail.com";
+        response.setId(1);
+        response.setName("Mike");
+        response.setEmail("mail@mail.com");
         var employee = Employee.builder().id(1).name("Mike").email("mail@mail.com").build();
 
         when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);
@@ -135,7 +135,7 @@ public class ControllerTests {
     @WithMockUser(roles = "ADMIN")
     public void updatePassByIdTest() throws Exception {
         var response = new EmployeeDto();
-        response.id = 1;
+        response.setId(1);
         var employee = Employee.builder().id(1).build();
 
         when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);

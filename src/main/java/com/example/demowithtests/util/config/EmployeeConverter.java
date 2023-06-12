@@ -4,31 +4,21 @@ import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailDto;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-public class EmployeeConverter {
+import java.util.List;
 
-    private final ModelMapper modelMapper;
+@Mapper(componentModel = "spring")
+public interface EmployeeConverter {
 
-    public EmployeeConverter(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
+    EmployeeDto toDto(Employee employee);
 
-    public ModelMapper getModelMapper() {
-        return modelMapper;
-    }
+    EmployeeReadDto toReadDto(Employee employee);
 
-    public EmployeeDto toDto(Employee entity) {
-        return modelMapper.map(entity, EmployeeDto.class);
-    }
+    Employee fromDto(EmployeeDto dto);
 
-    public EmployeeReadDto toReadDto(Employee entity) {
-        return modelMapper.map(entity, EmployeeReadDto.class);
-    }
+    List<EmployeeDto> toDtoList(List<Employee> employees);
 
-    public Employee fromDto(EmployeeDto dto) {
-        return modelMapper.map(dto, Employee.class);
-    }
+    EmployeeUpdateMailDto toUpdateMailDto(String oldMail, String newMail);
+
 }

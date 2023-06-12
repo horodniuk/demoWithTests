@@ -1,15 +1,13 @@
 package com.example.demowithtests.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeUpdateMailDto {
 
-    public String oldMail;
+    private String oldMail;
 
-    public String newMail;
+    private String newMail;
 }
