@@ -1,10 +1,8 @@
 package com.example.demowithtests.web;
 
+import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.dto.EmployeeDto;
-import com.example.demowithtests.dto.EmployeeReadDto;
-import com.example.demowithtests.dto.EmployeeUpdateMailDto;
-import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
+import com.example.demowithtests.dto.*;
 import com.example.demowithtests.service.EmployeeService;
 import com.example.demowithtests.util.config.EmployeeConverter;
 import com.example.demowithtests.util.exception.EmployeePaginationException;
@@ -24,8 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.Set;
 
 @RestController
@@ -50,7 +47,7 @@ public class EmployeeController {
     public EmployeeDto saveEmployee(@RequestBody @Valid EmployeeDto requestForSave) {
 
       //  var employee = converter.getModelMapper().map(requestForSave, Employee.class);
-        var employee = converter.fromDto(requestForSave);
+        var employee = converter.toEmployee(requestForSave);
         var dto = converter.toDto(employeeService.create(employee));
 
         return dto;
@@ -59,10 +56,12 @@ public class EmployeeController {
     @PostMapping("/usersS")
     @ResponseStatus(HttpStatus.CREATED)
     public void saveEmployee1(@RequestBody EmployeeDto employeeDto) {
-        Employee employee = converter.fromDto(employeeDto);
+        final var employee = EmployeeConverter.INSTANCE.toEmployee(employeeDto);
         employeeService.create(employee);
     }
 
+
+    //Получение списка юзеров
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     public List<EmployeeDto> getAllUsers() {
@@ -103,7 +102,7 @@ public class EmployeeController {
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EmployeeDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
-        Employee employee = converter.fromDto(employeeDto);
+        Employee employee = converter.toEmployee(employeeDto);
         Employee updatedEmployee = employeeService.updateById(id, employee);
         return converter.toDto(updatedEmployee);
     }
@@ -183,5 +182,4 @@ public class EmployeeController {
         var employees = employeeService.updateCountryFirstLetterToUpperCase();
         return converter.toDtoList(employees);
     }
-
 }

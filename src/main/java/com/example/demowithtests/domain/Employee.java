@@ -27,7 +27,7 @@ public class Employee {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "country",  nullable = false)
+    @Column(name = "country")
     @NotBlank
     private String country;
 

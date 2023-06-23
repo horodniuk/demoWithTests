@@ -46,6 +46,9 @@ public class RepositoryTests {
         Assertions.assertThat(employee.getId()).isGreaterThan(0);
         Assertions.assertThat(employee.getId()).isEqualTo(1);
         Assertions.assertThat(employee.getName()).isEqualTo("Mark");
+        Assertions.assertThat(employee.getCountry()).isEqualTo("England");
+        Assertions.assertThat(employee.getGender()).isEqualTo(Gender.M);
+        Assertions.assertThat(employee.getAddresses()).anyMatch(x -> x.getCountry().equals("UK"));
     }
 
     @Test
@@ -57,6 +60,9 @@ public class RepositoryTests {
 
         Assertions.assertThat(employee.getId()).isEqualTo(1);
         Assertions.assertThat(employee.getName()).isEqualTo("Mark");
+        Assertions.assertThat(employee.getCountry()).isEqualTo("England");
+        Assertions.assertThat(employee.getGender()).isEqualTo(Gender.M);
+        Assertions.assertThat(employee.getAddresses()).anyMatch(x -> x.getCountry().equals("UK"));
     }
 
     @Test
@@ -67,7 +73,8 @@ public class RepositoryTests {
         var employeesList = employeeRepository.findAll();
 
         Assertions.assertThat(employeesList.size()).isGreaterThan(0);
-
+        Assertions.assertThat(employeesList.size()).isEqualTo(1);
+        Assertions.assertThat(employeesList).isNotEmpty();
     }
 
     @Test
@@ -89,14 +96,31 @@ public class RepositoryTests {
     @Order(5)
     @DisplayName("Find employee by gender test")
     public void findByGenderTest() {
-
         var employees = employeeRepository.findByGender(Gender.M.toString(), "UK");
-
         assertThat(employees.get(0).getGender()).isEqualTo(Gender.M);
     }
 
+
     @Test
     @Order(6)
+    @Rollback(value = false)
+    @DisplayName("Check employee's field isDeleted false on default")
+    public void isDeletedFalseInDefaultTest() {
+        var employee = employeeRepository.findById(1).orElseThrow();
+        Assertions.assertThat(employee.isDeleted()).isFalse();
+    }
+
+    @Test
+    @Order(7)
+    @Rollback(value = false)
+    @DisplayName("Check employee's field country not blank")
+    public void isCountryNotBlank() {
+        var employee = employeeRepository.findById(1).orElseThrow();
+        Assertions.assertThat(employee.getCountry()).isNotBlank();
+    }
+
+    @Test
+    @Order(8)
     @Rollback(value = false)
     @DisplayName("Delete employee test")
     public void deleteEmployeeTest() {

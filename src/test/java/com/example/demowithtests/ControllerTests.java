@@ -27,18 +27,21 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Employee Controller Tests")
 public class ControllerTests {
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     ObjectMapper mapper;
 
@@ -58,6 +62,7 @@ public class ControllerTests {
     @MockBean
     EmployeeMapper employeeMapper;
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
 
@@ -69,15 +74,15 @@ public class ControllerTests {
         response.setId(1);
         response.setName("Mike");
         response.setEmail("mail@mail.com");
-        var employee = Employee.builder().id(1).name("Mike").email("mail@mail.com").build();
 
         var employee = Employee.builder()
                 .id(1)
                 .name("Mike")
-                .email("mail@mail.com").build();
+                .email("mail@mail.com")
+                .build();
 
-        when(employeeMapper.toEmployee(any(EmployeeDto.class))).thenReturn(employee);
-        when(employeeMapper.toEmployeeDto(any(Employee.class))).thenReturn(response);
+        when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);
+        when(employeeConverter.toEmployee(any(EmployeeDto.class))).thenReturn(employee);
         when(service.create(any(Employee.class))).thenReturn(employee);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
@@ -102,7 +107,8 @@ public class ControllerTests {
         var employeeToBeReturn = Employee.builder()
                 .id(1)
                 .name("Mark")
-                .country("France").build();
+                .country("France")
+                .build();
 
         doReturn(employeeToBeReturn).when(serviceEM).createWithJpa(any());
         when(this.serviceEM.createWithJpa(any(Employee.class))).thenReturn(employeeToBeReturn);
@@ -115,6 +121,8 @@ public class ControllerTests {
         mockMvc
                 .perform(builder)
                 .andExpect(status().isCreated())
+                .andDo(print())
+           //   .andExpect(jsonPath("$.id", is(1)))
                 .andReturn().getResponse();
 
         verify(this.serviceEM, times(1)).createWithJpa(any(Employee.class));
@@ -125,17 +133,16 @@ public class ControllerTests {
     @DisplayName("GET API -> /api/users/{id}")
     @WithMockUser(roles = "USER")
     public void getPassByIdTest() throws Exception {
-
-        var response = new EmployeeReadDto();
-        response.id = 1;
-        response.name = "Mike";
+        var response = EmployeeReadDto.builder()
+                .name("Mike")
+                .build();
 
         var employee = Employee.builder()
                 .id(1)
                 .name("Mike")
                 .build();
 
-        when(employeeMapper.toEmployeeReadDto(any(Employee.class))).thenReturn(response);
+        when(employeeConverter.toReadDto(any(Employee.class))).thenReturn(response);
         when(service.getById(1)).thenReturn(employee);
 
         MockHttpServletRequestBuilder mockRequest = get("/api/users/1");
@@ -156,7 +163,8 @@ public class ControllerTests {
         response.setId(1);
         var employee = Employee.builder().id(1).build();
 
-        when(employeeMapper.toEmployee(any(EmployeeDto.class))).thenReturn(employee);
+        when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);
+        when(employeeConverter.toEmployee(any(EmployeeDto.class))).thenReturn(employee);
         when(service.updateById(eq(1), any(Employee.class))).thenReturn(employee);
         when(employeeMapper.toEmployeeReadDto(any(Employee.class))).thenReturn(response);
 
@@ -180,9 +188,7 @@ public class ControllerTests {
 
         doNothing().when(service).removeById(1);
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-                .delete("/api/users/1")
-                .with(csrf());
+        MockHttpServletRequestBuilder mockRequest = patch("/api/users/1");
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isNoContent());
@@ -222,6 +228,67 @@ public class ControllerTests {
         verify(employeeMapper, times(1)).toEmployeeReadDto(employee);
         verify(employeeMapper, times(1)).toEmployeeReadDto(employeeTwo);
         verify(employeeMapper, times(1)).toEmployeeReadDto(employeeThree);
+
+        String contentType = result.getResponse().getContentType();
+        assertNotNull(contentType);
+        assertTrue(contentType.contains(MediaType.APPLICATION_JSON_VALUE));
+        String responseContent = result.getResponse().getContentAsString();
+        assertNotNull(responseContent);
+    }
+
+
+    @Test
+    @DisplayName("GET /api/users/e_null")
+    @WithMockUser(roles = "USER")
+    public void getEmailsByNullTest() throws Exception {
+        var employee = EmployeeDto.builder()
+                .id(1).name("John")
+                .email(null)
+                .build();
+
+        List<EmployeeDto> employees = List.of(employee);
+
+        when(employeeConverter.toDtoList(anyList())).thenReturn(employees);
+
+        MvcResult result = mockMvc.perform(get("/api/users/e_null"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].name", is("John")))
+                .andReturn();
+
+        verify(service).filterByEmailIsNull();
+        String contentType = result.getResponse().getContentType();
+        assertNotNull(contentType);
+        assertTrue(contentType.contains(MediaType.APPLICATION_JSON_VALUE));
+        String responseContent = result.getResponse().getContentAsString();
+        assertNotNull(responseContent);
+    }
+
+
+    @Test
+    @DisplayName("PATCH /api/users/c_up_upper")
+    @WithMockUser(roles = "ADMIN")
+    public void updateCountryFirstLetterToUpperCaseTest() throws Exception {
+        var employee = EmployeeDto.builder()
+                .id(1)
+                .name("John")
+                .email("joth@gmail.com")
+                .country("Us")
+                .build();
+
+        List<EmployeeDto> employees = List.of(employee);
+
+        when(employeeConverter.toDtoList(anyList())).thenReturn(employees);
+
+        MvcResult result = mockMvc.perform(patch("/api/users/c_up_upper"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].name", is("John")))
+                .andExpect(jsonPath("$[0].country", is("Us")))
+                .andReturn();
+
+        verify(service).updateCountryFirstLetterToUpperCase();
 
         String contentType = result.getResponse().getContentType();
         assertNotNull(contentType);

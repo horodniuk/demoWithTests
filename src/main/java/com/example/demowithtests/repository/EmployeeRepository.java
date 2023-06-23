@@ -67,6 +67,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query(value = "SELECT * FROM users WHERE country = 'Ukraine'", nativeQuery = true)
     Optional<List<Employee>> findAllUkrainian();
 
+
+
 }
 
 
