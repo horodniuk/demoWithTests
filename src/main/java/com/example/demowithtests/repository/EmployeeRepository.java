@@ -40,11 +40,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findAllByIsDeletedFalse();
 
     List<Employee> findByIsDeletedFalseAndEmailIsNull();
-
+    
     @Query("SELECT e FROM Employee e WHERE" +
            " e.isDeleted = false AND" +
            " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
     List<Employee> findByCountryFirstLetterLowerCase();
+
+
 
 }
 

@@ -4,6 +4,7 @@ import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.service.EmployeeServiceBean;
+import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,14 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Employee Service Tests")
@@ -72,7 +73,6 @@ public class ServiceTests {
     @Test
     @DisplayName("Throw exception when employee not found test")
     public void should_throw_exception_when_employee_doesnt_exist() {
-
         when(employeeRepository.findById(anyInt())).thenThrow(ResourceNotFoundException.class);
         assertThrows(ResourceNotFoundException.class, () -> employeeRepository.findById(anyInt()));
     }
@@ -98,11 +98,42 @@ public class ServiceTests {
     }
 
     @Test
-    @DisplayName("Delete employee test")
-    public void deleteEmployeeTest() {
-
+    @DisplayName("Remove employee by id test")
+    public void removeByIdTest() {
         when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
         service.removeById(employee.getId());
-        verify(employeeRepository).delete(employee);
+        assertTrue(employee.isDeleted());
+        verify(employeeRepository).save(employee);
     }
+
+    @Test
+    @DisplayName("Throw exception when remove employee but employe was deleted")
+    public void removeByIdTestWithNotExistId() {
+        employee.setDeleted(true);
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        assertThrows(EmployeeWasDeletedException.class, () -> service.removeById(employee.getId()));
+    }
+
+    @Test
+    @DisplayName("Update country first letter to upperCase test")
+    public void updateCountryFirstLetterToUpperCaseTest() {
+        employee.setCountry("ukraine");
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        when(employeeRepository.findByCountryFirstLetterLowerCase()).thenReturn(employees);
+        service.updateCountryFirstLetterToUpperCase();
+        assertEquals("Ukraine", employee.getCountry());
+        verify(employeeRepository).saveAll(employees);
+    }
+
+    @Test
+    @DisplayName("Update mail by id test")
+    public void updateMailByIdTest() {
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        service.updateMailById(employee.getId(), "test_mail.gmail");
+        assertEquals("test_mail.gmail", employee.getEmail());
+        verify(employeeRepository).save(employee);
+    }
+
 }

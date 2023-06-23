@@ -3,6 +3,7 @@ package com.example.demowithtests.dto;
 import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jdk.jshell.Snippet;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EmployeeDto {
 
     private Integer id;
@@ -37,4 +39,5 @@ public class EmployeeDto {
     private Gender gender;
 
     private Set<AddressDto> addresses = new HashSet<>();
+
 }

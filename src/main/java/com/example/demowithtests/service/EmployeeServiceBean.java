@@ -38,7 +38,7 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
     public Employee getById(Integer id) {
         var employee = employeeRepository.findById(id)
                 .orElseThrow(EmployeeNotFoundException::new);
-        if (employee.isDeleted()) {
+      if (employee.isDeleted()) {
             throw new EmployeeWasDeletedException();
         }
         return employee;
