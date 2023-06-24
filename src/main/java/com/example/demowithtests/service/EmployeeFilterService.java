@@ -10,4 +10,6 @@ public interface EmployeeFilterService extends EmployeeService {
 
     List<Employee> filterByEmailIsNull();
 
+    List<Employee> filterByCountryAndGmailEmail(String country);
+
 }

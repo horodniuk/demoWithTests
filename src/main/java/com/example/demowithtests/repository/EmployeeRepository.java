@@ -1,10 +1,12 @@
 package com.example.demowithtests.repository;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Gender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
@@ -41,11 +43,20 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     List<Employee> findByIsDeletedFalseAndEmailIsNull();
     
-    @Query("SELECT e FROM Employee e WHERE" +
+    @Query(value = "SELECT e FROM Employee e WHERE" +
            " e.isDeleted = false AND" +
            " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
     List<Employee> findByCountryFirstLetterLowerCase();
 
+
+    @Query(value = "SELECT * FROM users WHERE" +
+                   " country = :country AND email LIKE '%@gmail.com'", nativeQuery = true)
+    List<Employee> findByCountryAndEmailIsGmail(String country);
+
+
+    @Query(value = "SELECT COUNT(*) FROM users WHERE" +
+                   " gender = :gender", nativeQuery = true)
+    Integer countByGender(String gender);
 
 
 }

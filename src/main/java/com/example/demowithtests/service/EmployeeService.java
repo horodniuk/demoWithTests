@@ -40,4 +40,8 @@ public interface EmployeeService {
     List<Employee> updateCountryFirstLetterToUpperCase();
 
     Employee updateMailById(Integer id, String newMail);
+
+    List<Employee> filterByCountryAndGmailEmail(String country);
+
+    Integer countByGender(String gender);
 }

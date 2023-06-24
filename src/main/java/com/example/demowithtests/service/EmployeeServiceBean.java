@@ -1,9 +1,11 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
+import com.example.demowithtests.util.exception.GenderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginationService, EmployeeFilterService, EmployeeSortService {
+public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginationService, EmployeeFilterService, EmployeeSortService, EmployeeGroupingService {
 
     private final EmployeeRepository employeeRepository;
 
@@ -231,6 +232,25 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
             return employeeRepository.save(employee);
         } else {
             throw new EmployeeNotFoundException();
+        }
+    }
+
+    @Override
+    public List<Employee> filterByCountryAndGmailEmail(String country) {
+        return employeeRepository.findByCountryAndEmailIsGmail(country);
+    }
+
+    @Override
+    public Integer countByGender(String gender) {
+        checkGenderValid(gender);
+        return employeeRepository.countByGender(gender);
+    }
+
+    private void checkGenderValid(String gender) {
+        try {
+            Gender.valueOf(gender);
+        } catch (IllegalArgumentException ex) {
+            throw new GenderNotFoundException(gender);
         }
     }
 }

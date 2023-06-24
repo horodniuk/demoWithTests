@@ -55,4 +55,24 @@ public class EmployeeExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(GenderNotFoundException.class)
+    protected ResponseEntity<EmployeeErrorResponse> handleGenderNotFoundException(GenderNotFoundException exception) {
+        var response = new EmployeeErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Gender value error",
+                "Gender value - " + exception.getMessage() + " not exist",
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }
+
+
+
+
+
+
+
+
