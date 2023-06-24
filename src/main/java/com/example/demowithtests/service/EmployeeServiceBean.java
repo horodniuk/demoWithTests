@@ -249,7 +249,7 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
     @Override
     public Integer countByGender(String gender) {
         checkGenderValid(gender);
-        return employeeRepository.countByGender(gender);
+        return employeeRepository.countByGender(Gender.valueOf(gender));
     }
 
     private void checkGenderValid(String gender) {
