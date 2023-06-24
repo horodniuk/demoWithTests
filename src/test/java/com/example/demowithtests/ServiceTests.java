@@ -5,6 +5,7 @@ import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.service.EmployeeServiceBean;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
+import com.example.demowithtests.util.exception.GenderNotFoundException;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +44,7 @@ public class ServiceTests {
                 .id(1)
                 .name("Mark")
                 .country("UK")
-                .email("test@mail.com")
+                .email("test@gmail.com")
                 .gender(Gender.M)
                 .build();
     }
@@ -134,6 +135,32 @@ public class ServiceTests {
         service.updateMailById(employee.getId(), "test_mail.gmail");
         assertEquals("test_mail.gmail", employee.getEmail());
         verify(employeeRepository).save(employee);
+    }
+
+    @Test
+    @DisplayName("Filter employees by country and 'gmail' email")
+    public void filterByCountryAndGmailEmailTest() {
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+        String country = "UK";
+
+        when(employeeRepository.findByCountryAndEmailIsGmail(country)).thenReturn(employees);
+        List<Employee> employeesTemp = service.filterByCountryAndGmailEmail(country);
+
+        assertThat(employeesTemp).isEqualTo(employees);
+        verify(employeeRepository).findByCountryAndEmailIsGmail(country);
+    }
+
+    @Test
+    @DisplayName("Count employees by gender")
+    public void countByGenderTest() {
+        String gender = employee.getGender().name();
+
+        when(employeeRepository.countByGender(gender)).thenReturn(1);
+        Integer countTemp = service.countByGender(gender);
+
+        assertThat(countTemp).isEqualTo(countTemp);
+        verify(employeeRepository).countByGender(gender);
     }
 
 }

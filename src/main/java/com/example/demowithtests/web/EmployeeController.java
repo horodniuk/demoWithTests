@@ -2,12 +2,14 @@ package com.example.demowithtests.web;
 
 import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.dto.*;
 import com.example.demowithtests.service.EmployeeService;
 import com.example.demowithtests.util.config.EmployeeConverter;
 import com.example.demowithtests.util.exception.EmployeePaginationException;
 import com.example.demowithtests.service.EmployeeServiceEM;
 import com.example.demowithtests.util.mappers.EmployeeMapper;
+import com.example.demowithtests.util.exception.GenderNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -181,5 +183,18 @@ public class EmployeeController {
     public List<EmployeeDto> updateCountryFirstLetterToUpperCase() {
         var employees = employeeService.updateCountryFirstLetterToUpperCase();
         return converter.toDtoList(employees);
+    }
+
+    @GetMapping("/users/f_c_gmail")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EmployeeDto> getEmailIsGmailByCountry(@RequestParam(required = true) String country) {
+        var employees = employeeService.filterByCountryAndGmailEmail(country);
+        return converter.toDtoList(employees);
+    }
+
+    @GetMapping("/users/g_count")
+    @ResponseStatus(HttpStatus.OK)
+    public Integer getCountByGender(@RequestParam("gender") String gender) {
+            return employeeService.countByGender(gender);
     }
 }

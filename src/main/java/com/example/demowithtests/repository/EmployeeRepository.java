@@ -1,6 +1,7 @@
 package com.example.demowithtests.repository;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Gender;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +60,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     List<Employee> findByIsDeletedFalseAndEmailIsNull();
 
-    @Query("SELECT e FROM Employee e WHERE" +
+    @Query(value = "SELECT e FROM Employee e WHERE" +
            " e.isDeleted = false AND" +
            " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
     List<Employee> findByCountryFirstLetterLowerCase();
@@ -67,6 +68,15 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query(value = "SELECT * FROM users WHERE country = 'Ukraine'", nativeQuery = true)
     Optional<List<Employee>> findAllUkrainian();
 
+
+    @Query(value = "SELECT * FROM users WHERE" +
+                   " country = :country AND email LIKE '%@gmail.com'", nativeQuery = true)
+    List<Employee> findByCountryAndEmailIsGmail(String country);
+
+
+    @Query(value = "SELECT COUNT(*) FROM users WHERE" +
+                   " gender = :gender", nativeQuery = true)
+    Integer countByGender(String gender);
 
 
 }

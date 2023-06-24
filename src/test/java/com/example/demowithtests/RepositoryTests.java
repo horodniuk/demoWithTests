@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -118,26 +119,50 @@ public class RepositoryTests {
         var employee = employeeRepository.findById(1).orElseThrow();
         Assertions.assertThat(employee.getCountry()).isNotBlank();
     }
-
     @Test
     @Order(8)
+    @DisplayName("Filter employees by country and 'gmail' email")
+    public void findByCountryAndEmailIsGmailTest() {
+        var employee = employeeRepository.findById(1).orElseThrow();
+        employee.setEmail("test@gmail.com");
+        String country = "England";
+        List<Employee> employees = employeeRepository.findByCountryAndEmailIsGmail(country);
+
+        assertThat(employees).isNotEmpty();
+        assertThat(employees.get(0).getEmail()).endsWith("@gmail.com");
+        assertThat(employees.get(0).getCountry()).isEqualTo(country);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Count employees by gender")
+    public void countByGenderTest() {
+        String gender = "M";
+        Integer count = employeeRepository.countByGender(gender);
+
+        assertThat(count).isGreaterThanOrEqualTo(0);
+    }
+
+
+
+    @Test
+    @Order(10)
     @Rollback(value = false)
     @DisplayName("Delete employee test")
     public void deleteEmployeeTest() {
 
         var employee = employeeRepository.findById(1).orElseThrow();
-
         employeeRepository.delete(employee);
-
         Employee employeeNull = null;
 
         var optionalEmployee = Optional.ofNullable(employeeRepository.findByName("Martin"));
-
         if (optionalEmployee.isPresent()) {
             employeeNull = optionalEmployee.orElseThrow();
         }
 
         Assertions.assertThat(employeeNull).isNull();
     }
+
+
 
 }
