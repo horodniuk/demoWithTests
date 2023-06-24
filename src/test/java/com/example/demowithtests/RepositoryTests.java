@@ -137,13 +137,11 @@ public class RepositoryTests {
     @Order(9)
     @DisplayName("Count employees by gender")
     public void countByGenderTest() {
-        String gender = "M";
+        Gender gender = Gender.M;
         Integer count = employeeRepository.countByGender(gender);
 
         assertThat(count).isGreaterThanOrEqualTo(0);
     }
-
-
 
     @Test
     @Order(10)

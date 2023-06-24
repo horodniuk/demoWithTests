@@ -154,10 +154,10 @@ public class ServiceTests {
     @Test
     @DisplayName("Count employees by gender")
     public void countByGenderTest() {
-        String gender = employee.getGender().name();
+        Gender gender = employee.getGender();
 
         when(employeeRepository.countByGender(gender)).thenReturn(1);
-        Integer countTemp = service.countByGender(gender);
+        Integer countTemp = service.countByGender(gender.name());
 
         assertThat(countTemp).isEqualTo(countTemp);
         verify(employeeRepository).countByGender(gender);
