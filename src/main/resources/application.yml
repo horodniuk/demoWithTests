@@ -6,6 +6,7 @@ spring:
    # allow-bean-definition-overriding: true
    # lazy-initialization: true
   # Database
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/hl_enterprise
@@ -20,6 +21,19 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     #open-in-view: false
     #generate-ddl: true
+
+  # spring mail properties
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: maxim.gorodnyk55@gmail.com
+    password: 11111111111
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   flyway:
     #    locations: filesystem:.\src\main\resources\db\migration
     enabled: false
@@ -51,5 +65,3 @@ management:
   endpoint:
     health:
       enabled: true
-
-

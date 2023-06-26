@@ -1,13 +1,13 @@
 package com.example.demowithtests.web;
 
-import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Gender;
-import com.example.demowithtests.dto.*;
+import com.example.demowithtests.dto.EmployeeDto;
+import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.dto.EmployeeUpdateMailDto;
+import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
 import com.example.demowithtests.service.EmployeeService;
 import com.example.demowithtests.util.config.EmployeeConverter;
 import com.example.demowithtests.util.exception.EmployeePaginationException;
-import com.example.demowithtests.util.exception.GenderNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,7 +23,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -95,7 +96,7 @@ public class EmployeeController {
         var employee = employeeService.getById(id);
         log.debug("getById() EmployeeController - to dto start: id = {}", id);
         var dto = converter.toReadDto(employee);
-        log.debug("getEmployeeById() EmployeeController - end: name = {}", dto.getName());
+        log.debug("getEmployeeById() EmployeeController - end: name = {}", dto.name());
         return dto;
     }
 
@@ -113,7 +114,7 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     public EmployeeUpdateMailDto refreshEmployeeMail(@PathVariable("id") Integer id, @RequestBody EmployeeUpdateMailReadDto updateMailDto) {
         String oldMail = employeeService.getById(id).getEmail();
-        Employee employee = employeeService.updateMailById(id, updateMailDto.getNewMail());
+        Employee employee = employeeService.updateMailById(id, updateMailDto.newMail());
         String newMail = employee.getEmail();
         return converter.toUpdateMailDto(oldMail, newMail);
     }

@@ -67,10 +67,11 @@ public class ControllerTests {
     @DisplayName("POST /api/users")
     @WithMockUser(roles = "ADMIN")
     public void createPassTest() throws Exception {
-        var response = new EmployeeDto();
-        response.setId(1);
-        response.setName("Mike");
-        response.setEmail("mail@mail.com");
+        var response = EmployeeDto.builder()
+                .id(1)
+                .name("Mike")
+                .email("mail@mail.com")
+                .build();
 
         var employee = Employee.builder()
                 .id(1)
@@ -128,7 +129,7 @@ public class ControllerTests {
     @DisplayName("GET /api/users/{id}")
     @WithMockUser(roles = "USER")
     public void getPassByIdTest() throws Exception {
-        var response = EmployeeReadDto.builder()
+        EmployeeReadDto response =  EmployeeReadDto.builder()
                 .name("Mike")
                 .build();
 
@@ -153,8 +154,9 @@ public class ControllerTests {
     @DisplayName("PUT /api/users/{id}")
     @WithMockUser(roles = "ADMIN")
     public void updatePassByIdTest() throws Exception {
-        var response = new EmployeeDto();
-        response.setId(1);
+        var response = EmployeeDto.builder()
+                .id(1)
+                .build();
         var employee = Employee.builder().id(1).build();
 
         when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);
@@ -223,7 +225,8 @@ public class ControllerTests {
     @WithMockUser(roles = "USER")
     public void getEmailsByNullTest() throws Exception {
         var employee = EmployeeDto.builder()
-                .id(1).name("John")
+                .id(1)
+                .name("John")
                 .email(null)
                 .build();
 
