@@ -6,7 +6,6 @@ spring:
    # allow-bean-definition-overriding: true
    # lazy-initialization: true
   # Database
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/hl_enterprise
@@ -49,7 +48,8 @@ logging:
     console: "%d %-5level %logger : %msg%n"
   level:
     org.springframework: info
-    org.hibernate: info
+    #org.hibernate: debug
+    com.example.demowithtests: debug
 # Server configuration
 server:
   port: 8088 #set your port
@@ -65,3 +65,5 @@ management:
   endpoint:
     health:
       enabled: true
+
+

@@ -1,5 +1,7 @@
 package com.example.demowithtests.dto;
 
+import com.example.demowithtests.util.annotations.dto.CountryRightFormed;
+
 import java.time.Instant;
 import java.util.Date;
 
@@ -8,6 +10,9 @@ import java.util.Date;
 public record AddressDto (
 
     Long id,
+
+    @CountryRightFormed
+    public String country,
 
     Boolean addressHasActive,
 

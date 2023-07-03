@@ -41,7 +41,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findAllByIsDeletedFalse();
 
     List<Employee> findByIsDeletedFalseAndEmailIsNull();
-    
+
     @Query(value = "SELECT e FROM Employee e WHERE" +
            " e.isDeleted = false AND" +
            " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
@@ -56,23 +56,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Integer countByGender(Gender gender);
 
 
+    @Query(value = "SELECT * FROM users WHERE country = 'Ukraine'", nativeQuery = true)
+    Optional<List<Employee>> findAllUkrainian();
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

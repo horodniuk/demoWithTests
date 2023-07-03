@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -36,7 +36,6 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final EmployeeConverter converter;
 
-    //Операция сохранения юзера в базу данных
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "This is endpoint to add a new employee.", description = "Create request to add a new employee.", tags = {"Employee"})
@@ -50,7 +49,7 @@ public class EmployeeController {
       //  var employee = converter.getModelMapper().map(requestForSave, Employee.class);
         var employee = converter.toEmployee(requestForSave);
         var dto = converter.toDto(employeeService.create(employee));
-
+        log.debug("saveEmployee() - stop: dto = {}", dto);
         return dto;
     }
 
@@ -62,7 +61,6 @@ public class EmployeeController {
     }
 
 
-    //Получение списка юзеров
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     public List<EmployeeDto> getAllUsers() {
@@ -82,7 +80,7 @@ public class EmployeeController {
         return employeePage.map(converter::toDto);
     }
 
-    //Получения юзера по id
+
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "This is endpoint returned a employee by his id.", description = "Create request to read a employee by id", tags = {"Employee"})
@@ -120,14 +118,12 @@ public class EmployeeController {
     }
 
 
-    //Удаление по id
-    @PatchMapping("/users/{id}")
+    @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeEmployeeById(@PathVariable Integer id) {
         employeeService.removeById(id);
     }
 
-    //Удаление всех юзеров
     @DeleteMapping("/users")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeAllUsers() {
@@ -196,5 +192,11 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     public Integer getCountByGender(@RequestParam("gender") String gender) {
             return employeeService.countByGender(gender);
+    }
+
+    @PatchMapping("/users/ukrainians")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<String> sendEmailsAllUkrainian() {
+        return employeeService.sendEmailsAllUkrainian();
     }
 }

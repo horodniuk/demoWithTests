@@ -3,10 +3,14 @@ package com.example.demowithtests.service;
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
+import com.example.demowithtests.service.emailSevice.EmailSenderService;
+import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
+import com.example.demowithtests.util.annotations.entity.Name;
+import com.example.demowithtests.util.annotations.entity.ToLowerCase;
 import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.GenderNotFoundException;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,15 +24,29 @@ import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Slf4j
+@AllArgsConstructor
 @Service
 public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginationService, EmployeeFilterService, EmployeeSortService, EmployeeGroupingService {
 
     private final EmployeeRepository employeeRepository;
+    private final EmailSenderService emailSenderService;
 
     @PersistenceContext
     private EntityManager entityManager;
+
+
+    @Override
+    @ActivateCustomAnnotations({Name.class, ToLowerCase.class})
+    // @Transactional(propagation = Propagation.MANDATORY)
+    public Employee create(Employee employee) {
+        return employeeRepository.save(employee);
+    }
+
+    @Override
+    public Employee createEM(Employee employee) {
+        return entityManager.merge(employee);
+    }
 
     @Override
     public List<Employee> getAll() {
@@ -76,16 +94,7 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
         return employeeRepository.save(entity);
     }
 
-    @Override
-    // @Transactional(propagation = Propagation.MANDATORY)
-    public Employee create(Employee employee) {
-        return employeeRepository.save(employee);
-    }
 
-    @Override
-    public Employee createEM(Employee employee) {
-        return entityManager.merge(employee);
-    }
 
 
     @Override
@@ -219,6 +228,32 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
             sb.append(Character.toUpperCase(country.charAt(0))).append(country.substring(1));
             employee.setCountry(sb.toString());
         }
+
+    @Override
+    public Set<String> sendEmailsAllUkrainian() {
+        var ukrainians = employeeRepository.findAllUkrainian()
+                .orElseThrow(() -> new EntityNotFoundException("Employees from Ukraine not found!"));
+        var emails = new HashSet<String>();
+        ukrainians.forEach(employee -> {
+            emailSenderService.sendEmail(
+                    /*employee.getEmail(),*/
+                    "kaluzny.oleg@gmail.com", //для тесту
+                    "Need to update your information",
+                    String.format(
+                            "Dear " + employee.getName() + "!\n" +
+                                    "\n" +
+                                    "The expiration date of your information is coming up soon. \n" +
+                                    "Please. Don't delay in updating it. \n" +
+                                    "\n" +
+                                    "Best regards,\n" +
+                                    "Ukrainian Info Service.")
+            );
+            emails.add(employee.getEmail());
+        });
+
+        return emails;
+    }
+}
 
         return employeeRepository.saveAll(employees);
     }

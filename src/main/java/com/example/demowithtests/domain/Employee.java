@@ -1,5 +1,8 @@
 package com.example.demowithtests.domain;
 
+import com.example.demowithtests.util.annotations.entity.Name;
+import com.example.demowithtests.util.annotations.entity.ToLowerCase;
+import lombok.*;
 import lombok.*;
 import org.hibernate.annotations.Columns;
 
@@ -21,6 +24,7 @@ public class Employee {
     private Integer id;
 
     @Column(name = "name")
+    @Name
     private String name;
 
     @Column(name = "country")
@@ -28,6 +32,7 @@ public class Employee {
     private String country;
 
     @Column(name = "email")
+    @ToLowerCase
     private String email;
 
     @Column(name = "is_deleted")
