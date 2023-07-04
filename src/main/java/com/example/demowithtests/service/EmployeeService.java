@@ -57,4 +57,6 @@ public interface EmployeeService {
     List<Employee> filterByCountryAndGmailEmail(String country);
 
     Integer countByGender(String gender);
+
+    Set<String> sendEmailsAllUkrainian();
 }

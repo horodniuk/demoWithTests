@@ -1,27 +1,26 @@
-package com.example.demowithtests.service.emailSevice;
+package com.example.demowithtests.service.emailService;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.mail.MailException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-@Log4j2
+
 @AllArgsConstructor
+@Slf4j
 @Service
 public class EmailSenderServiceBean implements EmailSenderService {
-
-    private final JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
     @Override
-    public void sendEmail(String toEmail, String subject, String body) throws MailException {
+    public void sendEmail(String email, String body, String subject) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject(subject);
+        message.setTo(email);
         message.setText(body);
+        message.setSubject(subject);
 
         mailSender.send(message);
-        log.info("Mail to {} sent successfully", toEmail);
+        log.info("Mail to {} sent successfully", email);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.demowithtests.service.workspace;
+package com.example.demowithtests.service.workspaceService;
 
 import com.example.demowithtests.domain.WorkPlace;
 
