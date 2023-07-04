@@ -1,4 +1,4 @@
-package com.example.demowithtests.service.email;
+package com.example.demowithtests.service.emailService;
 
 import lombok.Data;
 

@@ -6,6 +6,7 @@ import com.example.demowithtests.util.annotations.dto.CountryRightFormed;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -34,7 +35,7 @@ public record EmployeeDto (
     Instant startDate,
 
     Gender gender,
-
+    @Valid
     Set<AddressDto> addresses
     ){
         @Builder

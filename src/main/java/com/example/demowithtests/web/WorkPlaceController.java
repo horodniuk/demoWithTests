@@ -3,7 +3,7 @@ package com.example.demowithtests.web;
 
 import com.example.demowithtests.domain.WorkPlace;
 import com.example.demowithtests.dto.workspace.WorkPlaceDto;
-import com.example.demowithtests.service.workspace.WorkPlaceService;
+import com.example.demowithtests.service.workspaceService.WorkPlaceService;
 import com.example.demowithtests.util.config.WorkPlaceConverter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

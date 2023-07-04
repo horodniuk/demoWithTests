@@ -12,11 +12,10 @@ public record AddressDto (
     Long id,
 
     @CountryRightFormed
-    public String country,
+    String country,
 
     Boolean addressHasActive,
 
-    String country,
 
     String city,
 

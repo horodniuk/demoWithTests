@@ -28,4 +28,6 @@ public @interface BlockedEmailDomains {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    String blockedEmailDomainsList() default "validation_list/russian_domains_second_level.txt";
 }

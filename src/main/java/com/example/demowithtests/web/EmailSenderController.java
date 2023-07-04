@@ -1,8 +1,8 @@
 package com.example.demowithtests.web;
 
 
-import com.example.demowithtests.service.email.EmailMessage;
-import com.example.demowithtests.service.email.EmailSenderService;
+import com.example.demowithtests.service.emailService.EmailMessage;
+import com.example.demowithtests.service.emailService.EmailSenderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;

@@ -3,7 +3,8 @@ package com.example.demowithtests.service;
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
-import com.example.demowithtests.service.emailSevice.EmailSenderService;
+
+import com.example.demowithtests.service.emailService.EmailSenderService;
 import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
@@ -27,7 +28,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 @Service
-public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginationService, EmployeeFilterService, EmployeeSortService, EmployeeGroupingService {
+public class EmployeeServiceBean implements EmployeeCrudService,
+                                            EmployeePaginationService,
+                                            EmployeeFilterService,
+                                            EmployeeSortService,
+                                            EmployeeMailService,
+                                            EmployeeGroupingService {
 
     private final EmployeeRepository employeeRepository;
     private final EmailSenderService emailSenderService;
@@ -228,6 +234,8 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
             sb.append(Character.toUpperCase(country.charAt(0))).append(country.substring(1));
             employee.setCountry(sb.toString());
         }
+        return employeeRepository.saveAll(employees);
+    }
 
     @Override
     public Set<String> sendEmailsAllUkrainian() {
@@ -241,22 +249,19 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
                     "Need to update your information",
                     String.format(
                             "Dear " + employee.getName() + "!\n" +
-                                    "\n" +
-                                    "The expiration date of your information is coming up soon. \n" +
-                                    "Please. Don't delay in updating it. \n" +
-                                    "\n" +
-                                    "Best regards,\n" +
-                                    "Ukrainian Info Service.")
+                            "\n" +
+                            "The expiration date of your information is coming up soon. \n" +
+                            "Please. Don't delay in updating it. \n" +
+                            "\n" +
+                            "Best regards,\n" +
+                            "Ukrainian Info Service.")
             );
             emails.add(employee.getEmail());
         });
 
         return emails;
     }
-}
 
-        return employeeRepository.saveAll(employees);
-    }
 
     @Override
     public Employee updateMailById(Integer id, String newMail) {
