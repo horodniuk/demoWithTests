@@ -91,11 +91,8 @@ public class EmployeeController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND. Specified employee request not found."),
             @ApiResponse(responseCode = "409", description = "Employee already exists")})
     public EmployeeReadDto getEmployeeById(@PathVariable Integer id) {
-        log.debug("getEmployeeById() EmployeeController - start: id = {}", id);
         var employee = employeeService.getById(id);
-        log.debug("getById() EmployeeController - to dto start: id = {}", id);
         var dto = converter.toReadDto(employee);
-        log.debug("getEmployeeById() EmployeeController - end: name = {}", dto.name());
         return dto;
     }
 

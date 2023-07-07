@@ -8,6 +8,7 @@ import com.example.demowithtests.service.emailService.EmailSenderService;
 import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
+import com.example.demowithtests.util.annotations.service.CheckEmployeeIsDeleted;
 import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.GenderNotFoundException;
@@ -63,19 +64,16 @@ public class EmployeeServiceBean implements EmployeeCrudService,
     public Employee getById(Integer id) {
         var employee = employeeRepository.findById(id)
                 .orElseThrow(EmployeeNotFoundException::new);
-      if (employee.isDeleted()) {
+        if (employee.isDeleted()) {
             throw new EmployeeWasDeletedException();
         }
         return employee;
     }
 
     @Override
+    @CheckEmployeeIsDeleted
     public void removeById(Integer id) {
-        var employee = employeeRepository.findById(id)
-                .orElseThrow(EmployeeNotFoundException::new);
-        if (employee.isDeleted()) {
-            throw new EmployeeWasDeletedException();
-        }
+        var employee = employeeRepository.findById(id).get();
         employee.setDeleted(true);
         employeeRepository.save(employee);
     }
@@ -88,7 +86,6 @@ public class EmployeeServiceBean implements EmployeeCrudService,
             employeeRepository.save(employee);
         }
     }
-
 
     @Override
     public Employee updateById(Integer id, Employee employee) {

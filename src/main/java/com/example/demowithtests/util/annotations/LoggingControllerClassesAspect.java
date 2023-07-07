@@ -20,7 +20,6 @@ public class LoggingControllerClassesAspect {
     @Before("callAtMyControllersPublicMethods()")
     public void logBefore(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().toShortString();
-        //log.info("Controller: " + methodName + " - start.");
         log.info("\u001B[32m" + "Controller: " + methodName + " - start." + "\u001B[0m");
     }
 

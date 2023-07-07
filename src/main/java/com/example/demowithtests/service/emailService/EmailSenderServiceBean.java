@@ -21,6 +21,5 @@ public class EmailSenderServiceBean implements EmailSenderService {
         message.setSubject(subject);
 
         mailSender.send(message);
-        log.info("Mail to {} sent successfully", email);
     }
 }
