@@ -27,14 +27,18 @@ public class CustomEntityValidationAspect {
         List annotations = Arrays.asList(annotation.value());
         for (Object arg : joinPoint.getArgs()) {
             if (arg instanceof Employee) {
-                for (Field field : arg.getClass().getDeclaredFields()) {
-                    if (annotations.contains(ToLowerCase.class) && field.isAnnotationPresent(ToLowerCase.class)) {
-                        setLowerCase(arg, field);
-                    }
-                    if (annotations.contains(Name.class) && field.isAnnotationPresent(Name.class)) {
-                        setFormattedName(arg, field);
-                    }
-                }
+                handleAnnotatedFieldsForEmployee(annotations, arg);
+            }
+        }
+    }
+
+    private void handleAnnotatedFieldsForEmployee(List annotations, Object arg) throws IllegalAccessException {
+        for (Field field : arg.getClass().getDeclaredFields()) {
+            if (annotations.contains(ToLowerCase.class) && field.isAnnotationPresent(ToLowerCase.class)) {
+                setLowerCase(arg, field);
+            }
+            if (annotations.contains(Name.class) && field.isAnnotationPresent(Name.class)) {
+                setFormattedName(arg, field);
             }
         }
     }
