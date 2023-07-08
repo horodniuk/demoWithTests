@@ -71,13 +71,14 @@ public class ControllerTests {
         var response = EmployeeDto.builder()
                 .id(1)
                 .name("Mike")
-                .email("mail@mail.com")
+                .email("mail@gmail.com")
+                .country("UK")
                 .build();
 
         var employee = Employee.builder()
                 .id(1)
                 .name("Mike")
-                .email("mail@mail.com")
+                .email("mail@gmail.com")
                 .build();
 
         when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);
@@ -86,7 +87,7 @@ public class ControllerTests {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
                 .post("/api/users")
-                .with(csrf())
+            //    .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(employee));
 
