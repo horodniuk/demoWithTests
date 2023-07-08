@@ -1,67 +1,93 @@
 package com.example.demowithtests;
 
+import com.example.demowithtests.domain.Address;
 import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.repository.Repository;
+import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.repository.EmployeeRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DisplayName("Employee Repository Tests")
 public class RepositoryTests {
 
     @Autowired
-    private Repository repository;
+    private EmployeeRepository employeeRepository;
 
     @Test
     @Order(1)
     @Rollback(value = false)
+    @DisplayName("Save employee test")
     public void saveEmployeeTest() {
 
-        Employee employee = Employee.builder().name("Mark").country("England").build();
+        var employee = Employee.builder()
+                .name("Mark")
+                .country("England")
+                .addresses(new HashSet<>(Set.of(
+                        Address
+                                .builder()
+                                .country("UK")
+                                .build())))
+                .gender(Gender.M)
+                .build();
 
-        repository.save(employee);
+        employeeRepository.save(employee);
 
         Assertions.assertThat(employee.getId()).isGreaterThan(0);
+        Assertions.assertThat(employee.getId()).isEqualTo(1);
+        Assertions.assertThat(employee.getName()).isEqualTo("Mark");
+        Assertions.assertThat(employee.getCountry()).isEqualTo("England");
+        Assertions.assertThat(employee.getGender()).isEqualTo(Gender.M);
+        Assertions.assertThat(employee.getAddresses()).anyMatch(x -> x.getCountry().equals("UK"));
     }
 
     @Test
     @Order(2)
+    @DisplayName("Get employee by id test")
     public void getEmployeeTest() {
 
-        Employee employee = repository.findById(1).orElseThrow();
+        var employee = employeeRepository.findById(1).orElseThrow();
 
         Assertions.assertThat(employee.getId()).isEqualTo(1);
-
+        Assertions.assertThat(employee.getName()).isEqualTo("Mark");
+        Assertions.assertThat(employee.getCountry()).isEqualTo("England");
+        Assertions.assertThat(employee.getGender()).isEqualTo(Gender.M);
+        Assertions.assertThat(employee.getAddresses()).anyMatch(x -> x.getCountry().equals("UK"));
     }
 
     @Test
     @Order(3)
+    @DisplayName("Get employees test")
     public void getListOfEmployeeTest() {
 
-        List<Employee> employeesList = repository.findAll();
+        var employeesList = employeeRepository.findAll();
 
         Assertions.assertThat(employeesList.size()).isGreaterThan(0);
-
+        Assertions.assertThat(employeesList.size()).isEqualTo(1);
+        Assertions.assertThat(employeesList).isNotEmpty();
     }
 
     @Test
     @Order(4)
     @Rollback(value = false)
+    @DisplayName("Update employee test")
     public void updateEmployeeTest() {
 
-        Employee employee = repository.findById(1).get();
+        var employee = employeeRepository.findById(1).orElseThrow();
 
         employee.setName("Martin");
-        Employee employeeUpdated = repository.save(employee);
+        var employeeUpdated = employeeRepository.save(employee);
 
         Assertions.assertThat(employeeUpdated.getName()).isEqualTo("Martin");
 
@@ -69,24 +95,72 @@ public class RepositoryTests {
 
     @Test
     @Order(5)
+    @DisplayName("Find employee by gender test")
+    public void findByGenderTest() {
+        var employees = employeeRepository.findByGender(Gender.M.toString(), "UK");
+        assertThat(employees.get(0).getGender()).isEqualTo(Gender.M);
+    }
+
+
+    @Test
+    @Order(6)
     @Rollback(value = false)
+    @DisplayName("Check employee's field isDeleted false on default")
+    public void isDeletedFalseInDefaultTest() {
+        var employee = employeeRepository.findById(1).orElseThrow();
+        Assertions.assertThat(employee.isDeleted()).isFalse();
+    }
+
+    @Test
+    @Order(7)
+    @Rollback(value = false)
+    @DisplayName("Check employee's field country not blank")
+    public void isCountryNotBlank() {
+        var employee = employeeRepository.findById(1).orElseThrow();
+        Assertions.assertThat(employee.getCountry()).isNotBlank();
+    }
+    @Test
+    @Order(8)
+    @DisplayName("Filter employees by country and 'gmail' email")
+    public void findByCountryAndEmailIsGmailTest() {
+        var employee = employeeRepository.findById(1).orElseThrow();
+        employee.setEmail("test@gmail.com");
+        String country = "England";
+        List<Employee> employees = employeeRepository.findByCountryAndEmailIsGmail(country);
+
+        assertThat(employees).isNotEmpty();
+        assertThat(employees.get(0).getEmail()).endsWith("@gmail.com");
+        assertThat(employees.get(0).getCountry()).isEqualTo(country);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Count employees by gender")
+    public void countByGenderTest() {
+        Gender gender = Gender.M;
+        Integer count = employeeRepository.countByGender(gender);
+
+        assertThat(count).isGreaterThanOrEqualTo(0);
+    }
+
+    @Test
+    @Order(10)
+    @Rollback(value = false)
+    @DisplayName("Delete employee test")
     public void deleteEmployeeTest() {
 
-        Employee employee = repository.findById(1).get();
+        var employee = employeeRepository.findById(1).orElseThrow();
+        employeeRepository.delete(employee);
+        Employee employeeNull = null;
 
-        repository.delete(employee);
-
-        //repository.deleteById(1L);
-
-        Employee employee1 = null;
-
-        Optional<Employee> optionalAuthor = Optional.ofNullable(repository.findByName("Martin"));
-
-        if (optionalAuthor.isPresent()) {
-            employee1 = optionalAuthor.get();
+        var optionalEmployee = Optional.ofNullable(employeeRepository.findByName("Martin"));
+        if (optionalEmployee.isPresent()) {
+            employeeNull = optionalEmployee.orElseThrow();
         }
 
-        Assertions.assertThat(employee1).isNull();
+        Assertions.assertThat(employeeNull).isNull();
     }
+
+
 
 }
