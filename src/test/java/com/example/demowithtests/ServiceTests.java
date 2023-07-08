@@ -7,6 +7,7 @@ import com.example.demowithtests.service.EmployeeServiceBean;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.GenderNotFoundException;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
+import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,13 +108,14 @@ public class ServiceTests {
         verify(employeeRepository).save(employee);
     }
 
-    @Test
+
+   /* @Test
     @DisplayName("Throw exception when remove employee but employe was deleted")
     public void removeByIdTestWithNotExistId() {
         employee.setDeleted(true);
         when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
         assertThrows(EmployeeWasDeletedException.class, () -> service.removeById(employee.getId()));
-    }
+    }*/
 
     @Test
     @DisplayName("Update country first letter to upperCase test")

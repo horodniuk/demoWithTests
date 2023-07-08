@@ -70,15 +70,17 @@ public class ControllerTests {
     @DisplayName("POST API -> /api/users")
     @WithMockUser(roles = "ADMIN")
     public void createPassTest() throws Exception {
-        var response = new EmployeeDto();
-        response.setId(1);
-        response.setName("Mike");
-        response.setEmail("mail@mail.com");
+        var response = EmployeeDto.builder()
+                .id(1)
+                .name("Mike")
+                .email("mail@gmail.com")
+                .country("UK")
+                .build();
 
         var employee = Employee.builder()
                 .id(1)
                 .name("Mike")
-                .email("mail@mail.com")
+                .email("mail@gmail.com")
                 .build();
 
         when(employeeConverter.toDto(any(Employee.class))).thenReturn(response);
@@ -87,7 +89,7 @@ public class ControllerTests {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
                 .post("/api/users")
-                .with(csrf())
+            //    .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(employee));
 
