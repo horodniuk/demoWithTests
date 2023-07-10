@@ -1,47 +1,48 @@
 package com.example.demowithtests.dto;
 
-import com.example.demowithtests.domain.Gender;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.demowithtests.util.annotations.dto.BlockedEmailDomains;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.Instant;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class EmployeeReadDto {
+import static io.swagger.v3.oas.annotations.media.Schema.*;
 
+
+public record EmployeeReadDto (
+
+    @NotNull
+    @Schema(name = "Employee ID", example = "1", requiredMode = RequiredMode.REQUIRED)
     Integer id,
 
     @NotNull(message = "Name may not be null")
     @Size(min = 2, max = 32, message = "Name must be between 2 and 32 characters long")
-    @Schema(description = "Name of an employee.", example = "Billy", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String name;
+    @Schema(name = "Employee name", description = "Name of an employee.", example = "Billy", requiredMode = RequiredMode.REQUIRED)
+    String name,
 
-    private String country;
+    @Schema(name = "Employee country", description = "Name of the country.", example = "England", requiredMode = RequiredMode.REQUIRED)
+    String country,
 
     @Email
     @NotNull
-    private String email;
+    @BlockedEmailDomains(contains = {".com1", ".ru", ".su"})
+    @Schema(name = "Employee email", description = "Email address of an employee.", example = "billys@gmail.com", requiredMode = RequiredMode.REQUIRED)
+    String email,
 
-    private Set<AddressDto> addresses = new HashSet<>();
+    @Schema(name = "Employee addresses", description = "Set of address details for an employee")
+    Set<AddressDto> addresses,
 
     //todo: dfhgjkdfhg Jira - 5544
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "Date response")
-    public Date date = Date.from(Instant.now());
 
-    private Gender gender;
+    Date date
+    ) {
+        @Builder
+        public EmployeeReadDto {
+            date = new Date();
+        }
 }
+

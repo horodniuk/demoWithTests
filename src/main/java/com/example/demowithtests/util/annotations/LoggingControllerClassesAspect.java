@@ -16,7 +16,7 @@ import static com.example.demowithtests.util.annotations.LogColorConstants.ANSI_
 @Component
 public class LoggingControllerClassesAspect {
 
-    @Pointcut("execution(public * com.example.demowithtests.web.EmployeeController.*(..))")
+    @Pointcut("execution(public * com.example.demowithtests.web.impl.EmployeeControllerBean.*(..))")
     public void callAtMyControllersPublicMethods() {
     }
 

@@ -3,9 +3,10 @@ package com.example.demowithtests.domain;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.*;
-import org.hibernate.annotations.Columns;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

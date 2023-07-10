@@ -1,34 +1,40 @@
 package com.example.demowithtests.dto;
 
 import com.example.demowithtests.util.annotations.dto.CountryRightFormed;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.example.demowithtests.domain.Address;
-import lombok.*;
-import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Date;
 
 //@Accessors(chain = true)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class AddressDto {
 
-    private Long id;
+public record AddressDto (
 
-    private Boolean addressHasActive = Boolean.TRUE;
 
+    @Schema(name = "Address ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+    Long id,
+
+    @NotNull
     @CountryRightFormed
-    public String country;
+    @Schema(name = "Country name", description = "Name of the country use ISO 3166 two-letter country codes",
+            example = "UA", requiredMode = Schema.RequiredMode.REQUIRED)
+    String country,
 
-    private String city;
+    @Schema(name = "Address нas active", description = "Indicate whether the address is active now", example = "true")
+    Boolean addressHasActive,
 
-    private String street;
+    @Schema(name = "City name", example = "Kharkiv")
+    String city,
+
+    @Schema(name = "Street name", example = "Street Shevchenko 192")
+    String street,
 
     //todo: dfhgjkdfhg Jira - 5544
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "Date response")
-    public Date date = Date.from(Instant.now());
+    @Schema(name = "Today's date", example = "2023-12-12")
+    Date date
+){
+        public AddressDto {
+            date = Date.from(Instant.now());
+        }
 }
