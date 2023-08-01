@@ -4,7 +4,7 @@ package com.example.demowithtests.web.impl;
 import com.example.demowithtests.domain.WorkPlace;
 import com.example.demowithtests.dto.workspace.WorkPlaceDto;
 import com.example.demowithtests.service.workspaceService.WorkPlaceService;
-import com.example.demowithtests.util.config.WorkPlaceConverter;
+import com.example.demowithtests.util.converter.WorkPlaceConverter;
 import com.example.demowithtests.web.WorkPlaceController;
 import com.example.demowithtests.web.swagger.WorkPlaceControllerSwagger;
 import lombok.AllArgsConstructor;

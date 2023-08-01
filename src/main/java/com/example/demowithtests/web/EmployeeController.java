@@ -4,11 +4,12 @@ import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
-import com.example.demowithtests.util.config.EmployeeConverter;
+import com.example.demowithtests.dto.passport.PassportReadDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -89,4 +90,10 @@ public interface EmployeeController {
 
     @PatchMapping("/users/ukrainians")
     Set<String> sendEmailsAllUkrainian();
+
+    @PatchMapping("/users/passport")
+    EmployeeDto issuancePassport(@RequestBody PassportReadDto passportReadDto);
+
+    @GetMapping("/{id}/image")
+    ResponseEntity<?> downloadImage(@PathVariable Integer id);
 }
