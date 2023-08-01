@@ -47,4 +47,8 @@ public interface EmployeeService {
     Integer countByGender(String gender);
 
     Set<String> sendEmailsAllUkrainian();
+
+    Employee issuancePassport(Integer employeeId, Integer passportId);
+
+
 }

@@ -45,4 +45,8 @@ public class Employee {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @OneToOne  (cascade = CascadeType.ALL)
+    @JoinColumn(name = "passport_id", referencedColumnName = "id")
+    private Passport passport;
 }

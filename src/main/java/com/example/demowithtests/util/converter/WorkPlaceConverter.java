@@ -1,4 +1,4 @@
-package com.example.demowithtests.util.config;
+package com.example.demowithtests.util.converter;
 
 import com.example.demowithtests.domain.WorkPlace;
 import com.example.demowithtests.dto.workspace.WorkPlaceDto;
@@ -10,7 +10,7 @@ public interface WorkPlaceConverter {
 
     WorkPlaceConverter INSTANCE = Mappers.getMapper(WorkPlaceConverter.class);
 
-    WorkPlaceDto toDto( WorkPlace workPlace);
+    WorkPlaceDto toDto(WorkPlace workPlace);
 
     WorkPlace toWorkPlace(WorkPlaceDto dto);
 

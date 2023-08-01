@@ -5,8 +5,10 @@ import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
+import com.example.demowithtests.dto.passport.PassportReadDto;
 import com.example.demowithtests.service.EmployeeService;
-import com.example.demowithtests.util.config.EmployeeConverter;
+import com.example.demowithtests.service.passport.image.ImageService;
+import com.example.demowithtests.util.converter.EmployeeConverter;
 import com.example.demowithtests.util.exception.EmployeePaginationException;
 import com.example.demowithtests.web.EmployeeController;
 import com.example.demowithtests.web.swagger.EmployeeControllerSwagger;
@@ -15,6 +17,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,6 +33,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class EmployeeControllerBean implements EmployeeController, EmployeeControllerSwagger {
 
+    private final ImageService imageService;
     private final EmployeeService employeeService;
     private final EmployeeConverter converter;
 
@@ -148,5 +157,31 @@ public class EmployeeControllerBean implements EmployeeController, EmployeeContr
     @Override
     public Set<String> sendEmailsAllUkrainian() {
         return employeeService.sendEmailsAllUkrainian();
+    }
+
+    @Override
+    public EmployeeDto issuancePassport(PassportReadDto passportDto) {
+        var employeeId = passportDto.userId();
+        var passportId = passportDto.passportId();
+        var employee = employeeService.issuancePassport(employeeId, passportId);
+        return converter.toDto(employee);
+    }
+    @Override
+    public ResponseEntity<?> downloadImage(Integer id) {
+        var employee = employeeService.getById(id);
+        if (employee == null || employee.getPassport() == null || employee.getPassport().getImage() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        var imageName = employee.getPassport().getImage().getName();
+        byte[] imageData = imageService.downloadImage(imageName);
+
+        if (imageData != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            headers.setContentLength(imageData.length);
+            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

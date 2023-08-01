@@ -2,9 +2,12 @@ package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.domain.Passport;
 import com.example.demowithtests.repository.EmployeeRepository;
 
 import com.example.demowithtests.service.emailService.EmailSenderService;
+import com.example.demowithtests.service.passport.PassportService;
+import com.example.demowithtests.service.passport.image.ImageService;
 import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
@@ -18,7 +21,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -38,6 +47,7 @@ public class EmployeeServiceBean implements EmployeeCrudService,
 
     private final EmployeeRepository employeeRepository;
     private final EmailSenderService emailSenderService;
+    private final PassportService passportService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -102,9 +112,7 @@ public class EmployeeServiceBean implements EmployeeCrudService,
 
     @Override
     public Page<Employee> getAllWithPagination(Pageable pageable) {
-        log.debug("getAllWithPagination() - start: pageable = {}", pageable);
         Page<Employee> list = employeeRepository.findAllByIsDeletedFalse(pageable);
-        log.debug("getAllWithPagination() - end: list = {}", list);
         return list;
     }
 
@@ -175,8 +183,6 @@ public class EmployeeServiceBean implements EmployeeCrudService,
                 .map(Employee::getCountry)
                 //.sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());*/
-
-        log.info("getAllEmployeeCountry() - end: countries = {}", countries);
         return countries;
     }
 
@@ -289,5 +295,12 @@ public class EmployeeServiceBean implements EmployeeCrudService,
         } catch (IllegalArgumentException ex) {
             throw new GenderNotFoundException(gender);
         }
+    }
+
+    @Override
+    public Employee issuancePassport(Integer employeeId, Integer passportId){
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(EmployeeNotFoundException :: new);
+        employee.setPassport(passportService.handlePassport(passportId));
+        return employeeRepository.save(employee);
     }
 }

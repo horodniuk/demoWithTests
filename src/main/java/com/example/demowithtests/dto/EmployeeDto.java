@@ -1,6 +1,8 @@
 package com.example.demowithtests.dto;
 
 import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.domain.Passport;
+import com.example.demowithtests.dto.passport.PassportDto;
 import com.example.demowithtests.util.annotations.dto.BlockedEmailDomains;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -43,10 +45,13 @@ public record EmployeeDto (
 
     @Valid
     @Schema(name = "addresses", description = "Set of address details for an employee")
-    Set<AddressDto> addresses
+    Set<AddressDto> addresses,
+
+    @Schema(name = "Employee passport", description = "Passport of an employee.")
+    PassportDto passport
     ){
         @Builder
         public EmployeeDto {
             startDate = Instant.now();
         }
-}
+    }
