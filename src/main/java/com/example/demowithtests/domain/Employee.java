@@ -39,14 +39,17 @@ public class Employee {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Set<Address> addresses = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
-    @OneToOne  (cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "passport_id", referencedColumnName = "id")
     private Passport passport;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmployeeWorkPlace> employeeWorkPlaces = new HashSet<>();
 }
