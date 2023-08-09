@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = "employee")
+@EqualsAndHashCode(exclude = {"employee", "image"})
 @Entity
 public class Passport {
     @Id
@@ -30,6 +30,9 @@ public class Passport {
 
     private LocalDateTime expireDate;
 
+    @Column(name = "canceled_employee_id")
+    private Integer canceledEmployeeId;
+
     @Builder.Default
     private Boolean isHandled = Boolean.FALSE;
 
@@ -37,6 +40,7 @@ public class Passport {
     @OneToOne(mappedBy = "passport")
     private Employee employee;
 
+    @ToString.Exclude
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;

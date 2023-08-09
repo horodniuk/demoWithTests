@@ -5,10 +5,12 @@ import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
+import com.example.demowithtests.dto.passport.PassportDto;
 import com.example.demowithtests.dto.passport.PassportReadDto;
 import com.example.demowithtests.service.EmployeeService;
 import com.example.demowithtests.service.passport.image.ImageService;
 import com.example.demowithtests.util.converter.EmployeeConverter;
+import com.example.demowithtests.util.converter.PassportConverter;
 import com.example.demowithtests.util.exception.EmployeePaginationException;
 import com.example.demowithtests.web.EmployeeController;
 import com.example.demowithtests.web.swagger.EmployeeControllerSwagger;
@@ -34,6 +36,7 @@ public class EmployeeControllerBean implements EmployeeController, EmployeeContr
     private final ImageService imageService;
     private final EmployeeService employeeService;
     private final EmployeeConverter converter;
+    private final PassportConverter passportConverter;
 
     @Override
     public EmployeeDto saveEmployee( EmployeeDto requestForSave) {
@@ -158,13 +161,6 @@ public class EmployeeControllerBean implements EmployeeController, EmployeeContr
     }
 
     @Override
-    public EmployeeDto issuancePassport(PassportReadDto passportDto) {
-        var employeeId = passportDto.userId();
-        var passportId = passportDto.passportId();
-        var employee = employeeService.issuancePassport(employeeId, passportId);
-        return converter.toDto(employee);
-    }
-    @Override
     public ResponseEntity<?> downloadImage(Integer id) {
         var employee = employeeService.getById(id);
         if (employee == null || employee.getPassport() == null || employee.getPassport().getImage() == null) {
@@ -182,4 +178,27 @@ public class EmployeeControllerBean implements EmployeeController, EmployeeContr
             return ResponseEntity.notFound().build();
         }
     }
+
+    @Override
+    public EmployeeDto issuancePassport(PassportReadDto passportDto) {
+        var employeeId = passportDto.userId();
+        var passportId = passportDto.passportId();
+        var employee = employeeService.issuancePassport(employeeId, passportId);
+        return converter.toDto(employee);
+    }
+
+    @Override
+    public EmployeeDto cancelPassport(PassportReadDto passportDto) {
+        var employeeId = passportDto.userId();
+        var employee = employeeService.cancelPassport(employeeId);
+        return converter.toDto(employee);
+    }
+
+    @Override
+    public List<PassportDto> findByCanceledEmployeeId(Integer id) {
+        var passports = employeeService.findByCanceledEmployeeId(id);
+        return passportConverter.toDtoListPassports(passports);
+    }
+
+
 }

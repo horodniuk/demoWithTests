@@ -2,6 +2,7 @@ package com.example.demowithtests.repository;
 
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.domain.Passport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -56,5 +57,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     @Query(value = "SELECT * FROM users WHERE country = 'Ukraine'", nativeQuery = true)
     Optional<List<Employee>> findAllUkrainian();
-
 }

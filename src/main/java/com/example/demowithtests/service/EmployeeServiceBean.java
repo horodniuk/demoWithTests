@@ -5,9 +5,9 @@ import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.domain.Passport;
 import com.example.demowithtests.repository.EmployeeRepository;
 
+import com.example.demowithtests.repository.PassportRepository;
 import com.example.demowithtests.service.emailService.EmailSenderService;
 import com.example.demowithtests.service.passport.PassportService;
-import com.example.demowithtests.service.passport.image.ImageService;
 import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
@@ -15,19 +15,15 @@ import com.example.demowithtests.util.annotations.service.CheckEmployeeIsDeleted
 import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.GenderNotFoundException;
+import com.example.demowithtests.util.history.passport.PassportHistory;
+import com.example.demowithtests.util.history.passport.PassportMethodName;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -39,15 +35,17 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Service
 public class EmployeeServiceBean implements EmployeeCrudService,
-                                            EmployeePaginationService,
-                                            EmployeeFilterService,
-                                            EmployeeSortService,
-                                            EmployeeMailService,
-                                            EmployeeGroupingService {
+        EmployeePaginationService,
+        EmployeeFilterService,
+        EmployeeSortService,
+        EmployeeMailService,
+        EmployeeGroupingService {
 
     private final EmployeeRepository employeeRepository;
     private final EmailSenderService emailSenderService;
     private final PassportService passportService;
+    private final PassportRepository passportRepository;
+    private final PassportHistory passportHistory;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -298,9 +296,31 @@ public class EmployeeServiceBean implements EmployeeCrudService,
     }
 
     @Override
-    public Employee issuancePassport(Integer employeeId, Integer passportId){
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(EmployeeNotFoundException :: new);
-        employee.setPassport(passportService.handlePassport(passportId));
+    public Employee issuancePassport(Integer employeeId, Integer passportId) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(EmployeeNotFoundException::new);
+        Passport passport = passportService.handlePassport(passportId);
+        employee.setPassport(passport);
+        passportHistory.addPassportHistory(employeeId, passport, PassportMethodName.ISSUANCE_PASSPORT);
         return employeeRepository.save(employee);
     }
+
+    @Override
+    public Employee cancelPassport(Integer employeeId) {
+        Employee employee = getById(employeeId);
+        Passport passport = employee.getPassport();
+        if (passport != null) {
+            passportService.cancelPassport(passport, employeeId);
+            employee.setPassport(null);
+            passportHistory.addPassportHistory(employeeId, passport, PassportMethodName.CANCEL_PASSPORT);
+            return employeeRepository.save(employee);
+        }
+        return employee;
+    }
+
+    @Override
+    public List<Passport> findByCanceledEmployeeId(Integer employeeId) {
+        return passportRepository.findByCanceledEmployeeId(employeeId);
+    }
+
+
 }
