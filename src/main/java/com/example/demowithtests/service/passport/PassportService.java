@@ -14,4 +14,6 @@ public interface PassportService {
     Passport handlePassport(Integer id);
 
     Passport addImage(Integer passportId, Integer imageId);
+
+    Passport cancelPassport(Passport passport, Integer employeeId);
 }

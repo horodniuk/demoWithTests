@@ -4,9 +4,10 @@ import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.domain.Passport;
 import com.example.demowithtests.repository.EmployeeRepository;
-import com.example.demowithtests.service.emailSevice.EmailSenderService;
+
+import com.example.demowithtests.repository.PassportRepository;
+import com.example.demowithtests.service.emailService.EmailSenderService;
 import com.example.demowithtests.service.passport.PassportService;
-import com.example.demowithtests.service.passport.image.ImageService;
 import com.example.demowithtests.util.annotations.entity.ActivateCustomAnnotations;
 import com.example.demowithtests.util.annotations.entity.Name;
 import com.example.demowithtests.util.annotations.entity.ToLowerCase;
@@ -14,19 +15,15 @@ import com.example.demowithtests.util.annotations.service.CheckEmployeeIsDeleted
 import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import com.example.demowithtests.util.exception.EmployeeWasDeletedException;
 import com.example.demowithtests.util.exception.GenderNotFoundException;
-import lombok.RequiredArgsConstructor;
+import com.example.demowithtests.util.history.passport.PassportHistory;
+import com.example.demowithtests.util.history.passport.PassportMethodName;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -34,15 +31,21 @@ import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Slf4j
 @AllArgsConstructor
 @Service
-public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginationService, EmployeeFilterService, EmployeeSortService, EmployeeGroupingService {
+public class EmployeeServiceBean implements EmployeeCrudService,
+        EmployeePaginationService,
+        EmployeeFilterService,
+        EmployeeSortService,
+        EmployeeMailService,
+        EmployeeGroupingService {
 
     private final EmployeeRepository employeeRepository;
     private final EmailSenderService emailSenderService;
     private final PassportService passportService;
+    private final PassportRepository passportRepository;
+    private final PassportHistory passportHistory;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -102,16 +105,7 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
         return employeeRepository.save(entity);
     }
 
-    @Override
-    // @Transactional(propagation = Propagation.MANDATORY)
-    public Employee create(Employee employee) {
-        return employeeRepository.save(employee);
-    }
 
-    @Override
-    public Employee createEM(Employee employee) {
-        return entityManager.merge(employee);
-    }
 
 
     @Override
@@ -241,9 +235,34 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
             sb.append(Character.toUpperCase(country.charAt(0))).append(country.substring(1));
             employee.setCountry(sb.toString());
         }
-
         return employeeRepository.saveAll(employees);
     }
+
+    @Override
+    public Set<String> sendEmailsAllUkrainian() {
+        var ukrainians = employeeRepository.findAllUkrainian()
+                .orElseThrow(() -> new EntityNotFoundException("Employees from Ukraine not found!"));
+        var emails = new HashSet<String>();
+        ukrainians.forEach(employee -> {
+            emailSenderService.sendEmail(
+                    /*employee.getEmail(),*/
+                    "kaluzny.oleg@gmail.com", //для тесту
+                    "Need to update your information",
+                    String.format(
+                            "Dear " + employee.getName() + "!\n" +
+                            "\n" +
+                            "The expiration date of your information is coming up soon. \n" +
+                            "Please. Don't delay in updating it. \n" +
+                            "\n" +
+                            "Best regards,\n" +
+                            "Ukrainian Info Service.")
+            );
+            emails.add(employee.getEmail());
+        });
+
+        return emails;
+    }
+
 
     @Override
     public Employee updateMailById(Integer id, String newMail) {
@@ -277,9 +296,31 @@ public class EmployeeServiceBean implements EmployeeCrudService, EmployeePaginat
     }
 
     @Override
-    public Employee issuancePassport(Integer employeeId, Integer passportId){
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(EmployeeNotFoundException :: new);
-        employee.setPassport(passportService.handlePassport(passportId));
+    public Employee issuancePassport(Integer employeeId, Integer passportId) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(EmployeeNotFoundException::new);
+        Passport passport = passportService.handlePassport(passportId);
+        employee.setPassport(passport);
+        passportHistory.addPassportHistory(employeeId, passport, PassportMethodName.ISSUANCE_PASSPORT);
         return employeeRepository.save(employee);
     }
+
+    @Override
+    public Employee cancelPassport(Integer employeeId) {
+        Employee employee = getById(employeeId);
+        Passport passport = employee.getPassport();
+        if (passport != null) {
+            passportService.cancelPassport(passport, employeeId);
+            employee.setPassport(null);
+            passportHistory.addPassportHistory(employeeId, passport, PassportMethodName.CANCEL_PASSPORT);
+            return employeeRepository.save(employee);
+        }
+        return employee;
+    }
+
+    @Override
+    public List<Passport> findByCanceledEmployeeId(Integer employeeId) {
+        return passportRepository.findByCanceledEmployeeId(employeeId);
+    }
+
+
 }

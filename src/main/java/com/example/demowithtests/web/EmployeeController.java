@@ -4,6 +4,7 @@ import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailDto;
 import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
+import com.example.demowithtests.dto.passport.PassportDto;
 import com.example.demowithtests.dto.passport.PassportReadDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -91,9 +92,15 @@ public interface EmployeeController {
     @PatchMapping("/users/ukrainians")
     Set<String> sendEmailsAllUkrainian();
 
+    @GetMapping("/{id}/image")
+    ResponseEntity<?> downloadImage(@PathVariable Integer id);
+
     @PatchMapping("/users/passport")
     EmployeeDto issuancePassport(@RequestBody PassportReadDto passportReadDto);
 
-    @GetMapping("/{id}/image")
-    ResponseEntity<?> downloadImage(@PathVariable Integer id);
+    @PatchMapping("/users/passport/cancel")
+    EmployeeDto cancelPassport(@RequestBody PassportReadDto passportReadDto);
+
+    @GetMapping("/users/{id}/p_cancel/")
+    List<PassportDto> findByCanceledEmployeeId(@PathVariable Integer id);
 }

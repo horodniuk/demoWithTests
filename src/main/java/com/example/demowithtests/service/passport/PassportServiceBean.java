@@ -38,10 +38,19 @@ public class PassportServiceBean implements PassportService {
     }
 
     @Override
-    public Passport addImage( Integer imageId, Integer passportId) {
+    public Passport addImage(Integer imageId, Integer passportId) {
         Passport passport = passportRepository.findById(passportId).orElseThrow();
         Image image = imageRepository.findById(imageId).orElseThrow();
         passport.setImage(image);
         return passportRepository.save(passport);
+    }
+
+    @Override
+    public Passport cancelPassport(Passport passport, Integer employeeId) {
+        if (passport.getCanceledEmployeeId() == null) {
+            passport.setCanceledEmployeeId(employeeId);
+            return passportRepository.save(passport);
+        }
+        return passport;
     }
 }
