@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "workplaces")
@@ -27,4 +29,7 @@ public class WorkPlace {
 
     @Column(name = "coffee_machine")
     private Boolean coffeeMachine = Boolean.TRUE;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmployeeWorkPlace> employeeWorkPlaces = new HashSet<>();
 }

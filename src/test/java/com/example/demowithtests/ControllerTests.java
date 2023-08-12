@@ -4,8 +4,8 @@ import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.service.EmployeeService;
-import com.example.demowithtests.util.config.EmployeeConverter;
-import com.example.demowithtests.web.EmployeeController;
+import com.example.demowithtests.util.converter.EmployeeConverter;
+import com.example.demowithtests.web.impl.EmployeeControllerBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -46,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(controllers = EmployeeController.class)
+@WebMvcTest(controllers = EmployeeControllerBean.class)
 @DisplayName("Employee Controller Tests")
 public class ControllerTests {
 
@@ -99,6 +98,9 @@ public class ControllerTests {
         verify(service).create(any());
     }
 
+
+
+
     @Test
     @DisplayName("Entity POST /api/users")
     @WithMockUser(roles = "ADMIN")
@@ -107,6 +109,7 @@ public class ControllerTests {
                 .id(1)
                 .name("Mark")
                 .country("France")
+                .email("mail@gmail.com")
                 .build();
         doReturn(employeeToBeReturn).when(service).create(any());
         when(this.service.create(any(Employee.class))).thenReturn(employeeToBeReturn);

@@ -1,6 +1,7 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Passport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -47,4 +48,11 @@ public interface EmployeeService {
     Integer countByGender(String gender);
 
     Set<String> sendEmailsAllUkrainian();
+
+    Employee issuancePassport(Integer employeeId, Integer passportId);
+
+    Employee cancelPassport(Integer employeeId);
+
+    List<Passport> findByCanceledEmployeeId(Integer employeeId);
+
 }
