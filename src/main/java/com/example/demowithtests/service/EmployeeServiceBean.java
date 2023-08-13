@@ -280,7 +280,7 @@ public class EmployeeServiceBean implements EmployeeCrudService,
 
     @Override
     public List<Employee> filterByCountryAndGmailEmail(String country) {
-        return employeeRepository.findByCountryAndEmailIsGmail(country);
+        return employeeRepository.findByCountryAndEmailIsGmail(country, "%@gmail.com");
     }
 
     @Override

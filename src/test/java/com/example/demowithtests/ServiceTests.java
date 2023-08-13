@@ -145,12 +145,10 @@ public class ServiceTests {
         List<Employee> employees = new ArrayList<>();
         employees.add(employee);
         String country = "UK";
-
-        when(employeeRepository.findByCountryAndEmailIsGmail(country)).thenReturn(employees);
+        when(employeeRepository.findByCountryAndEmailIsGmail(country, "%@gmail.com")).thenReturn(employees);
         List<Employee> employeesTemp = service.filterByCountryAndGmailEmail(country);
-
         assertThat(employeesTemp).isEqualTo(employees);
-        verify(employeeRepository).findByCountryAndEmailIsGmail(country);
+        verify(employeeRepository).findByCountryAndEmailIsGmail(country, "%@gmail.com");
     }
 
     @Test

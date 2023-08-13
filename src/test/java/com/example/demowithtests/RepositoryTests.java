@@ -119,15 +119,13 @@ public class RepositoryTests {
         var employee = employeeRepository.findById(1).orElseThrow();
         Assertions.assertThat(employee.getCountry()).isNotBlank();
     }
+
     @Test
     @Order(8)
     @DisplayName("Filter employees by country and 'gmail' email")
     public void findByCountryAndEmailIsGmailTest() {
-        var employee = employeeRepository.findById(1).orElseThrow();
-        employee.setEmail("test@gmail.com");
         String country = "England";
-        List<Employee> employees = employeeRepository.findByCountryAndEmailIsGmail(country);
-
+        List<Employee> employees = employeeRepository.findByCountryAndEmailIsGmail(country, "%@gmail.com");
         assertThat(employees).isNotEmpty();
         assertThat(employees.get(0).getEmail()).endsWith("@gmail.com");
         assertThat(employees.get(0).getCountry()).isEqualTo(country);

@@ -28,7 +28,7 @@ public class Employee {
     private String name;
 
     @Column(name = "country")
-    @NotBlank
+   // @NotBlank
     private String country;
 
     @Column(name = "email")

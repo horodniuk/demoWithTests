@@ -43,13 +43,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findByIsDeletedFalseAndEmailIsNull();
 
     @Query(value = "SELECT e FROM Employee e WHERE" +
-           " e.isDeleted = false AND" +
-           " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
+                   " e.isDeleted = false AND" +
+                   " LOWER(SUBSTRING(e.country, 1, 1)) = SUBSTRING(e.country, 1, 1)")
     List<Employee> findByCountryFirstLetterLowerCase();
 
 
-    @Query("SELECT e FROM Employee e WHERE e.country = :country AND e.email LIKE '%@gmail.com'")
-    List<Employee> findByCountryAndEmailIsGmail(String country);
+    @Query("SELECT e FROM Employee e WHERE e.country = :country AND e.email LIKE :emailPattern")
+    List<Employee> findByCountryAndEmailIsGmail(String country, String emailPattern);
 
 
     @Query("SELECT COUNT(e) FROM Employee e WHERE e.gender = :gender")
