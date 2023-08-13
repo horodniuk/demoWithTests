@@ -4,7 +4,7 @@ package com.example.demowithtests.domain;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @Entity
@@ -22,8 +22,8 @@ public class Image {
     private String type;
 
     @Lob
-    @Type(type = "org.hibernate.type.ImageType")
-    private byte[] imageData;
+    @Column(name = "image_data", columnDefinition = "bytea")
+    public byte[] imageData;
 
     @ToString.Exclude
     @OneToOne(mappedBy = "image")

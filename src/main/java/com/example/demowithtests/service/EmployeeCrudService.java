@@ -10,8 +10,6 @@ public interface EmployeeCrudService extends EmployeeService {
 
     Employee create(Employee employee);
 
-    Employee createEM(Employee employee);
-
     Employee getById(Integer id);
 
     void removeById(Integer id);

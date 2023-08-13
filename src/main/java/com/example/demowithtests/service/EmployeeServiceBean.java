@@ -25,9 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,11 +57,6 @@ public class EmployeeServiceBean implements EmployeeCrudService,
     // @Transactional(propagation = Propagation.MANDATORY)
     public Employee create(Employee employee) {
         return employeeRepository.save(employee);
-    }
-
-    @Override
-    public Employee createEM(Employee employee) {
-        return entityManager.merge(employee);
     }
 
     @Override
@@ -213,6 +209,12 @@ public class EmployeeServiceBean implements EmployeeCrudService,
     public List<Employee> filterByCountry(String country) {
         return employeeRepository.findByCountry(country);
     }
+
+    @Override
+    public List<Employee> findByNameContaining(String name) {
+        return null;
+    }
+
 
     @Override
     public List<Employee> filterByEmailIsNull() {

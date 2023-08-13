@@ -1,7 +1,7 @@
 package com.example.demowithtests.dto.workspace;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 public record WorkPlaceDto(
         @Schema(description = "Workplace ID", example = "1")

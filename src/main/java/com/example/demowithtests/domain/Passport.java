@@ -3,7 +3,8 @@ package com.example.demowithtests.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 

@@ -3,7 +3,8 @@ package com.example.demowithtests.dto;
 import com.example.demowithtests.util.annotations.dto.CountryRightFormed;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.Instant;
 import java.util.Date;
 

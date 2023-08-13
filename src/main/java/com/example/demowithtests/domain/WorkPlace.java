@@ -1,12 +1,12 @@
 package com.example.demowithtests.domain;
 
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +30,6 @@ public class WorkPlace {
     @Column(name = "coffee_machine")
     private Boolean coffeeMachine = Boolean.TRUE;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "workPlace", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmployeeWorkPlace> employeeWorkPlaces = new HashSet<>();
 }

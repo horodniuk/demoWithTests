@@ -12,7 +12,8 @@ import com.example.demowithtests.util.exception.employee_workplace.WorkPlaceNotA
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

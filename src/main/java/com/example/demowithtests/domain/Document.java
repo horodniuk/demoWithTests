@@ -29,9 +29,9 @@ public final class Document {
     @Builder.Default
     private Boolean isHandled = Boolean.FALSE;
 
-    @ToString.Exclude
+   /* @ToString.Exclude
     @OneToOne(mappedBy = "document")
-    private Employee employee;
+    private Employee employee;*/
 
     /*@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")

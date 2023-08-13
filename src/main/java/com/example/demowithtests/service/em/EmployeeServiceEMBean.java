@@ -1,4 +1,4 @@
-package com.example.demowithtests.service;
+package com.example.demowithtests.service.em;
 
 import com.example.demowithtests.domain.Employee;
 import jakarta.persistence.EntityManager;
