@@ -1,6 +1,7 @@
 package com.example.demowithtests.service.em;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.util.exception.EmployeeNotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -61,5 +62,28 @@ public class EmployeeServiceEMBean implements EmployeeServiceEM {
     public void deleteByIdWithJpa(Integer id) {
         Optional<Employee> employee = Optional.ofNullable(entityManager.find(Employee.class, id));
         entityManager.remove(employee);
+    }
+
+    /**
+     * @param id
+     * @param country
+     * @return employee
+     * @throws EmployeeNotFoundException
+     */
+
+    @Override
+    @Transactional
+    public Employee updateCountryWithJpa(Integer id, String country) {
+        Employee employee = entityManager.find(Employee.class, id);
+        if (employee != null) {
+            entityManager.detach(employee);
+            employee.setCountry(country);
+            if ("China".equalsIgnoreCase(country)) {
+                employee.setDeleted(true);
+            }
+            return entityManager.merge(employee);
+        } else {
+            throw new EmployeeNotFoundException();
+        }
     }
 }

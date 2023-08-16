@@ -8,6 +8,7 @@ import com.example.demowithtests.dto.EmployeeUpdateMailReadDto;
 import com.example.demowithtests.dto.passport.PassportDto;
 import com.example.demowithtests.dto.passport.PassportReadDto;
 import com.example.demowithtests.service.EmployeeService;
+import com.example.demowithtests.service.em.EmployeeServiceEM;
 import com.example.demowithtests.service.passport.image.ImageService;
 import com.example.demowithtests.util.converter.EmployeeConverter;
 import com.example.demowithtests.util.converter.PassportConverter;
@@ -37,6 +38,7 @@ public class EmployeeControllerBean implements EmployeeController, EmployeeContr
     private final EmployeeService employeeService;
     private final EmployeeConverter converter;
     private final PassportConverter passportConverter;
+    private final EmployeeServiceEM employeeServiceEM;
 
     @Override
     public EmployeeDto saveEmployee( EmployeeDto requestForSave) {
@@ -198,6 +200,12 @@ public class EmployeeControllerBean implements EmployeeController, EmployeeContr
     public List<PassportDto> findByCanceledEmployeeId(Integer id) {
         var passports = employeeService.findByCanceledEmployeeId(id);
         return passportConverter.toDtoListPassports(passports);
+    }
+
+    @Override
+    public EmployeeDto updateCountryByUsers(Integer id, String country) {
+        var employee = employeeServiceEM.updateCountryWithJpa(id, country);
+        return converter.toDto(employee);
     }
 
 

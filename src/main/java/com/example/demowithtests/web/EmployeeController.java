@@ -102,6 +102,9 @@ public interface EmployeeController {
     @PatchMapping("/users/passport/cancel")
     EmployeeDto cancelPassport(@RequestBody PassportReadDto passportReadDto);
 
-    @GetMapping("/users/{id}/p_cancel/")
+    @GetMapping("/users/{id}/p_cancel")
     List<PassportDto> findByCanceledEmployeeId(@PathVariable Integer id);
+
+    @PatchMapping("users/{id}/up_c/")
+    EmployeeDto updateCountryByUsers(@PathVariable Integer id, @RequestParam String country);
 }

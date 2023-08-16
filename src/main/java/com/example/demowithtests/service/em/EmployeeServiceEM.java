@@ -13,4 +13,6 @@ public interface EmployeeServiceEM {
     Employee updateByIdWithJpa(Integer id, Employee employee);
 
     Set<String> findAllCountriesWithJpa();
+
+    Employee updateCountryWithJpa(Integer id, String country);
 }

@@ -36,7 +36,7 @@ spring:
   flyway:
     #    locations: filesystem:.\src\main\resources\db\migration
     enabled: true
-    clean-disabled: true
+    clean-disabled: false
     baseline-on-migrate: true
 #  security:
 #    user:
@@ -48,7 +48,7 @@ logging:
     console: "%d %-5level %logger : %msg%n"
   level:
     org.springframework: info
-    #org.hibernate: debug
+    org.hibernate: false
     com.example.demowithtests: debug
 # Server configuration
 server:
