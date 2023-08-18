@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: addCountry1Column
+      author: horodniuk
+      changes:
+        - addColumn:
+            schemaName: liquibase
+            tableName: users
+            columns:
+              - column:
+                  name: country1
+                  type: VARCHAR(255)
+                  remarks: "New country1 column"
+
+  - changeSet:
+      id: dropCountry1Column
+      author: horodniuk
+      changes:
+        - dropColumn:
+            schemaName: liquibase
+            tableName: users
+            columnName: country1

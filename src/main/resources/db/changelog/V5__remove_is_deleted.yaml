@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: dropIsDeletedColumn
+      author: horodniuk
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE liquibase.users DROP COLUMN IF EXISTS is_deleted;

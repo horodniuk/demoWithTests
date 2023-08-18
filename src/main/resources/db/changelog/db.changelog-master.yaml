@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/V1__init.yaml
+  - include:
+      file: db/changelog/V2__remove_some_field.yaml
+  - include:
+      file: db/changelog/V3__remove_isDelete.yaml
+  - include:
+      file: db/changelog/V4__added_gender_to_employee.yaml
+  - include:
+      file: db/changelog/V5__remove_is_deleted.yaml
+  - include:
+      file: db/changelog/V6__added_new_is_deleted.yaml
+  - include:
+      file: db/changelog/V7__remove_fields.yaml
+  - include:
+      file: db/changelog/V8__check_trigger.yaml

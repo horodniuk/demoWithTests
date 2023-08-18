@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: addIsDeletedColumn
+      author: horodniuk
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE liquibase.users ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN;
